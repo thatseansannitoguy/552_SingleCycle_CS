@@ -1,0 +1,68 @@
+TODO's
+//ALU OPS (Compute Instructions)//
+Opcode rd, rs, rt (ADD PADDSUB, SUB, RED, XOR)
+
+- extend 16 bit adder, so do sub
+
+- ADD SUB saturation
+	- if result exceeds the most positive number (2^15-1), an overflow, then saturate result to 2^15-1
+	- if the result is smaller then the most negative number (-2^15), an underflow, result sat to -2^15
+	
+- extended PADDSB to do saturation each 4 bits
+
+- extend shifter to implement ROR
+
+- Implement RED insturction somewhere
+
+Opcode rd, rs, imm (SLL, SRA, ROR)
+
+0aaa dddd ssss tttt
+
+
+// MEMORY INSTRUCTIONS //
+Opcode rt, rs, offset
+
+- LW - loads rt with contents from mem location specified by rs plus imm offset, the signed valued offset is sign
+		extended and added to rs to compute memory address of mem location to load. (addr always even)
+		
+- SW - instruction saves (rt) to location specified by (rs + imm offset), the addr of the memory location 
+		is computed as in LW
+		
+		encoding of these two:
+		10aa tttt ssss oooo
+		10aa: opcode
+		tttt: rt
+		ssss: rs
+		oooo: offset in 2's comp but right shifted by 1 bit 
+		
+		address computed as addr = (Reg[ssss] & 0xFFFE) + (oooo<<1)
+		
+- LHB (load higher byte), loads msb 8 bits of rd with the bits in the immediate field, the lsb 8 bits of rd 
+	are left unchanged
+	LHB Rx, 0xYY 
+	
+- LLB (load lower byte), LLB loads the least significant 8 bits of rd while the most significant remains unchanged. 
+	LLB Rx, 0xYY
+
+101a dddd uuuu uuuuu
+
+// CONTROL INSTRUCTIONS //
+B, BR, PCS, HLT
+
+- B - branch conditionally jump
+ B cond, label
+ Opcode ccci iiii iiii
+	-will need to left shift i...i by 1 
+	-target is computed as: target = PC + 2 + (iiiiiiiii << 1). 
+	
+- BR (branch Register) conditionally jumps to addr specified by rs
+	BR cond,  rs
+	Opcode cccx ssss xxxx
+	
+- PCS saves contents of the next PC (addr of PCS instruction + 2) to the rd and increments PC
+	PCS rd
+	Opcode dddd xxxx xxxx
+	
+- HLT freezes the whole machine by stopping PC advance
+	Opcode xxxx xxxx xxxx
+	
