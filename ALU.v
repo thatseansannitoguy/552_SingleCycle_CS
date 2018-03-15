@@ -48,6 +48,6 @@ assign ALU_Out =
 	(Opcode == PADDSB) ? PADDSB_out : //TODO 4 bit saturation for addsub 4 bit 
 		16'h0000;
 
-//TODO setting condition flags N, V, Z
+//TODO setting condition flags N(sign bit), V(overflow), Z(zero)
 		
 endmodule
