@@ -15,4 +15,6 @@ full_adder_1bit FA2(A[1], sub^B[1], carry[1], Sum[1], carry[2]);
 full_adder_1bit FA3(A[2], sub^B[2], carry[2], Sum[2], carry[3]);
 full_adder_1bit FA4(A[3], sub^B[3], carry[3], Sum[3], carry[4]);
 
+//TODO implement saturation
+
 endmodule

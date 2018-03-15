@@ -1,7 +1,7 @@
 module PC_control(C, I, F, PC_in, PC_out);
 
-input [2:0] C, F;
-input [8:0] I;
+input [2:0] C, F; //control, flags = 3'b N, V, Z
+input [8:0] I; //immediate 
 input [15:0] PC_in;
 
 output [15:0] PC_out;

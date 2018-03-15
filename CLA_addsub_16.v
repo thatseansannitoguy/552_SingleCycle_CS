@@ -26,7 +26,7 @@ full_adder_1bit FA4(A[13], B[13], carry[12], Sum_temp[13], carry[13]);
 full_adder_1bit FA4(A[14], B[14], carry[13], Sum_temp[14], carry[14]);
 full_adder_1bit FA4(A[15], B[15], carry[14], Sum_temp[15], carry[15]);
 
-//Sat logic, may not need to be in here AND may not be correct
+//TODO Sat logic not correct, needs to be done correctly
 assign Sum = ((A >= 16'h0000) && (B >= 16'h0000) && (Sum_temp < 16'h0000)) ? 16'h7FFF :
 			 ((A <= 16'h0000) && (B <= 16'h0000) && (Sum_temp > 16'h0000)) ? 16'h8000 :
 			 Sum_temp;

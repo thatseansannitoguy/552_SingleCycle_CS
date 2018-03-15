@@ -2,15 +2,15 @@ TODO's
 //ALU OPS (Compute Instructions)//
 Opcode rd, rs, rt (ADD PADDSUB, SUB, RED, XOR)
 
-- extend 16 bit adder, so do sub
+-DONE extend 16 bit adder, so do sub
 
-- ADD SUB saturation
+- ADD SUB saturation - DONE BUT WITH <,> operators... not allowed
 	- if result exceeds the most positive number (2^15-1), an overflow, then saturate result to 2^15-1
 	- if the result is smaller then the most negative number (-2^15), an underflow, result sat to -2^15
 	
 - extended PADDSB to do saturation each 4 bits
 
-- extend shifter to implement ROR
+-DONE extend shifter to implement ROR
 
 - Implement RED insturction somewhere
 

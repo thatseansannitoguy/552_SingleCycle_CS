@@ -13,6 +13,10 @@ wire L3_1, L3_2, L3_3, L3_4, L3_5, L3_6, L3_7, L3_8, L3_9, L3_10, L3_11, L3_12, 
 wire[1:0] Sel_1, Sel_2, Sel_3, Sel_4;
 //00=A, 01=B, 10=C
 
+assign Mode = (Mode == 2'b10) ? 2'b11 : //ROR assignment fix
+			  Mode;
+
+
 //sel[1],sel[0]
 //shiftval, mode
 assign Sel_1 = {Shift_Val[0], Mode[0]}; 
