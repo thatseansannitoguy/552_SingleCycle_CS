@@ -26,12 +26,12 @@ full_adder_1bit FA4(A[13], B[13], carry[12], Sum_temp[13], carry[13]);
 full_adder_1bit FA4(A[14], B[14], carry[13], Sum_temp[14], carry[14]);
 full_adder_1bit FA4(A[15], B[15], carry[14], Sum_temp[15], carry[15]);
 
-//TODO Sat logic not correct, needs to be done correctly
-//maybe, if Ovfl, and A bit 15 is 1, and B bit 15 is 1, then 16'h8000
-// then if Ovfl, and A bit 15 is 0,, and B bit 15 is 0, then 16'h7FFF
+//Sat logic
+// if Ovfl, and A bit 15 is 1, and B bit 15 is 1, then 16'h8000
+// then if Ovfl, and A bit 15 is 0, and B bit 15 is 0, then 16'h7FFF
 // else, then normal Sum
-assign Sum = ((A >= 16'h0000) && (B >= 16'h0000) && (Sum_temp < 16'h0000)) ? 16'h7FFF :
-			 ((A <= 16'h0000) && (B <= 16'h0000) && (Sum_temp > 16'h0000)) ? 16'h8000 :
+assign Sum = ((Ovfl == 1'b1) && (A[15] == 1'b1) && (B[15] == 1'b1)) ? 16'h8000 :
+			 ((Ovfl == 1'b1) && (A[15] == 1'b0) && (B[15] == 1'b0)) ? 16'h7FFF :
 			 Sum_temp;
 
 endmodule

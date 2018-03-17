@@ -1,4 +1,4 @@
-module ALU(ALU_Out, Error, ALU_In1, ALU_In2, Opcode);
+module ALU(ALU_Out, Ovfl, ALU_In1, ALU_In2, Opcode, Flags_out);
 
 //Opcode specifications
 //all with leading 0
@@ -16,7 +16,8 @@ input[15:0] ALU_In1, ALU_In2;
 input[2:0] Opcode;
 
 output[15:0] ALU_Out;
-output Error; //just to show overflow
+output Ovfl; //just to show overflow/saturation
+output[2:0] Flags_out;
 
 wire[15:0] CLA_out, Shift_out, RED_out, PADDSB_out;
 
@@ -30,24 +31,34 @@ parameter ROR = 3'b110;
 parameter PADDSB = 3'b111;
 
 
-CLA_addsub_16 add_sub(.Sum(CLA_out), .Ovfl(Error), .A(ALU_In1), .B(ALU_In2), .sub(Opcode[0]));
+CLA_addsub_16 add_sub(.Sum(CLA_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2), .sub(Opcode[0]));
 
 //modifies opcode to fit our shifter within shifter
 Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(ALU_In2), .Mode(Opcode[1:0]));
   
-PSA_16bit paddsub_ops(.Sum(PADDSB_out), .Error(Error), .A(ALU_In1), .B(ALU_In2));
+PSA_16bit paddsub_ops(.Sum(PADDSB_out), .Error(Ovfl), .A(ALU_In1), .B(ALU_In2));
   
 assign ALU_Out =
-	(Opcode == ADD) ? CLA_out : //TODO saturation implemented correctly in 16bit add_sub
-	(Opcode == SUB) ? CLA_out : //TODO saturation implemented correctly in 16bit add_sub
+	(Opcode == ADD) ? CLA_out : 
+	(Opcode == SUB) ? CLA_out : 
 	(Opcode == RED) ? RED_out : //TODO create RED module
 	(Opcode == XOR) ? ALU_In1 ^ ALU_In2:
 	(Opcode == SLL) ? Shift_out :
 	(Opcode == SRA) ? Shift_out :
 	(Opcode == ROR) ? Shift_out :
-	(Opcode == PADDSB) ? PADDSB_out : //TODO 4 bit saturation for addsub 4 bit 
+	(Opcode == PADDSB) ? PADDSB_out : 
 		16'h0000;
 
-//TODO setting condition flags N(sign bit), V(overflow), Z(zero)
-		
+//setting condition flags N(sign bit), V(overflow), Z(zero)
+assign Flags_out[2] = (((Opcode != PADDSB) || (Opcode != RED)) && ALU_Out[15] == 1'b1) ? 1'b1 :
+					  1'b0;
+
+assign Flags_out[1] = (Opcode == ADD && Sum) ? 1'b1 :
+					  (Opcode == SUB && Ovfl) ? 1'b1 :
+					  1'b0;
+
+assign Flags_out[0] = (Opcode == ADD && ALU_Out == 16'h0000) ? 1'b1 :
+					  (Opcode == SUB && ALU_Out == 16'h0000) ? 1'b1 :
+					  1'b0;
+					  		
 endmodule
