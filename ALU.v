@@ -1,4 +1,4 @@
-module ALU(ALU_Out, Ovfl, ALU_In1, ALU_In2, Opcode, Flags_out);
+module ALU(ALU_Out, ALU_In1, ALU_In2, Opcode, Flags_out);
 
 //Opcode specifications
 //all with leading 0
@@ -16,10 +16,11 @@ input[15:0] ALU_In1, ALU_In2;
 input[2:0] Opcode;
 
 output[15:0] ALU_Out;
-output Ovfl; //just to show overflow/saturation
+
 output[2:0] Flags_out;
 
 wire[15:0] CLA_out, Shift_out, RED_out, PADDSB_out;
+wire Ovfl; //just to show overflow/saturation
 
 parameter ADD = 3'b000;
 parameter SUB = 3'b001;
