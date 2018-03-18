@@ -25,7 +25,7 @@ assign PC_out = (C==3'b000 && F[0]==1'b0) ? branch_take :
 				(C==3'b100 && (F[0]==1'b1 || (F[0]==1'b0 && F[2]==1'b0))) ? branch_take :
 				(C==3'b101 && (F[0]==1'b1 || F[2]==1'b1)) ? branch_take : 
 				(C==3'b110 && F[1]==1'b1) ? branch_take :
-				(C==3'b111) ? branch_take :
+				(C==3'b111) branch_take :
 				normal_pc;
 
 endmodule

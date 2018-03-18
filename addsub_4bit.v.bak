@@ -18,7 +18,7 @@ full_adder_1bit FA4(A[3], sub^B[3], carry[3], Sum_temp[3], carry[4]);
 
 //saturation
 assign Sum = ((Ovfl == 1'b1) && (A[3] == 1'b1) && (B[3] == 1'b1)) ? 4'b1000 :
-			 ((Ovfl == 1'b1) && (A[3] == 1'b0) && (B[3] == 1'b0)) ? 4'b0111 :
+			 ((Ovfl == 1'b1) && (A[3] == 1'b0) && (B[3] == 1'b0)) ? 4'h0111 :
 			 Sum_temp;
 
 endmodule
