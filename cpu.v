@@ -1,4 +1,3 @@
-//TESTING
 module cpu(clk, rst_n, hlt, pc);
 input clk, rst_n; //system clock and active LOW reset, causes execution to start at 0x0000
 
@@ -10,12 +9,26 @@ wire [15:0] instr, //instruction
 			read_data2, //to alu_mux and to d-mem write data
 			alu_result,	//to D-mem and D-mem mux
 			read_data,  //data read in D-mem to post D-mem mux
-			write_data //from D-mem mux
+			write_data, //from D-mem mux
 			alu_src_data, //from reg to alu mux
-			immm_off; //SW, LW, LHB LLB
+			imm_off, //SW, LW, LHB LLB
+			pc_incr; //store calculated pc increment
 			
-wire reg [2:0] flags;		
+wire [2:0] cond; 
+
+reg [2:0] flags;	//control, flags = 3'b N, V, Z
+
+//signals out designation
+//[6] Jump
+//[5] Branch
+//[4] MemRead
+//[3] MemToReg
+//[2] MemWrite
+//[1] ALUsrc
+//[0] RegWrite	
 wire [6:0] signals_out;
+
+wire pc_write; //Eventually used for hazard detection
 
 //control signals set by control unit			
 wire jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
@@ -34,7 +47,7 @@ memory1c I_mem(				.data_out(instr),
 //control block
 //only needs opcode
 full_control control(	.instr(instr), 
-						.signals_out(signals_out)
+						.signals_out(signals_out),
 						.imm_dec(imm_off));
 
 //register file 
@@ -70,15 +83,25 @@ memory1c D_mem(	.data_out(read_data), //to post d-mem mux
 				.rst(rst_n));
 
 				
-//control assignments 
-assign next_pc = pc + 1;
+//PC Control 
+//module PC_control(C, I, F, PC_in, PC_out);
+PC_control PC_control(	.C(cond), 
+				.I(imm_off), 
+				.F(flags), 
+				.PC_in(pc), 
+				.PC_out(pc_branch));
 
+
+//control assignments //
+assign pc_incr = pc + 1;
+assign pc_write = 1;  
+assign pc_branch = jump ? 0: 0;
+assign cond = instr[11:9]; 
 
 //D-mem mux
-assign write_data = (mem_to_reg) ? read_data :
-					alu_result;				
+assign write_data = (mem_to_reg) ? read_data :	alu_result;				
 //alu src mux
-assign alu_src_data = (alu_src) ? immm_off : //decision between reg val and imm
+assign alu_src_data = (alu_src) ? imm_off : //decision between reg val and imm
 					read_data2;		
 assign jump = signals_out[6];
 assign branch = signals_out[5];
@@ -88,7 +111,7 @@ assign mem_write = signals_out[2];
 assign alu_src = signals_out[1];
 assign reg_write = signals_out[0];
 
-//TODO
+// Program Counter
 always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
 		pc <= 16'h0000;

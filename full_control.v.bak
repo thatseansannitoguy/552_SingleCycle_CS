@@ -51,7 +51,8 @@ assign signals_out[6] = (	(Opcode == BR) ||
 							(Opcode == B)) ? 1'b1 : 1'b0; //Jump
 //TODO not sure about BR and B
 assign signals_out[5] = (	(Opcode == BR) || 
-							(Opcode == B)) ? 1'b1 : 1'b0; //Branch						
+							(Opcode == B)) ? 1'b1 : 1'b0; //Branch
+							
 assign signals_out[4] = (   (Opcode == LW) ) ? 1'b1 : 1'b0; //MemRead
 
 assign signals_out[3] = (   (Opcode == LW) ) ? 1'b1 : 1'b0; //MemToReg
