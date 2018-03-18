@@ -9,12 +9,17 @@ wire [15:0] instr, //instruction
 			read_data2, //to alu_mux and to d-mem write data
 			alu_result,	//to D-mem and D-mem mux
 			read_data,  //data read in D-mem to post D-mem mux
-			write_data; //from D-mem mux
+			write_data //from D-mem mux
+			alu_src_data; //from reg to alu mux
+
 			
 wire reg [2:0] flags;		
+wire [6:0] signals_out;
+
+wire [2:0] alu_opcode;
 
 //control signals set by control unit			
-wire mem_write, mem_read, mem_to_reg;
+wire jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
 
 //two instances of Memory for I-mem and D-mem
 //Instruction memory
@@ -28,8 +33,10 @@ memory1c I_mem(				.data_out(instr),
 							.rst(rst_n));
 							
 //control block
-//TODO make an actual entire control block
-
+//only needs opcode
+full_control control(	.Opcode(instr[15:12]), 
+						.signals_out(signals_out), 
+						.alu_op(alu_opcode));
 
 //register file 
 //RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
@@ -38,8 +45,8 @@ RegisterFile reg_file(	.clk(clk),
 						.SrcReg1(instr[7:4]), //rs
 						.SrcReg2(instr[3:0]), //rt
 						.DstReg(instr[11:8]), //rd
-						.WriteReg(),// mux select between instr[7:4] or imm TODO 
-						.DstData(), // comes from mux after d-mem TODO
+						.WriteReg(reg_write), //if the write is enabled 
+						.DstData(write_data), // comes from mux after d-mem 
 						.SrcData1(read_data1), //rs
 						.SrcData2(read_data2));//rt to alu_mux and to write data D-mem
 						
@@ -47,11 +54,11 @@ RegisterFile reg_file(	.clk(clk),
 // module ALU(ALU_Out, Ovfl, ALU_In1, ALU_In2, Opcode, Flags_out);
 ALU alu_op(	.ALU_Out(alu_result),  //to D-mem and D-mem mux
 			.ALU_In1(read_data1),  //rs
-			.ALU_In2(),  //rt or sign extended imm TODO
-			.Opcode(instr[14:12]), //opcode
+			.ALU_In2(alu_src_data),  //rt or sign extended imm
+			.Opcode(alu_opcode), //opcode
 			.Flags_out(flags)); //to alu control unit and the and of the branch
 			
-//branch conditions logic? TODO?
+//branch conditions logic? TODO? includes alu and shift op
 
 //Data memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
@@ -62,6 +69,7 @@ memory1c D_mem(	.data_out(read_data), //to post d-mem mux
 				.wr(mem_write), //from control
 				.clk(clk), 
 				.rst(rst_n));
+
 				
 //control assignments 
 assign next_pc = pc + 1;
@@ -69,10 +77,20 @@ assign next_pc = pc + 1;
 //D-mem mux
 assign write_data = (mem_to_reg) ? read_data :
 					alu_result;
+				
+//alu src mux
+assign alu_src_data = (alu_src) ? sign_extend_val : //TODO for if asserted
+					read_data2;
+			
+assign jump = signals_out[6];
+assign branch = signals_out[5];
+assign mem_read = signals_out[4];
+assign mem_to_reg = signals_out[3];
+assign mem_write = signals_out[2];
+assign alu_src = signals_out[1];
+assign reg_write = signals_out[0];
 
-
-
-
+//TODO
 always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
 		pc <= 16'h0000;
