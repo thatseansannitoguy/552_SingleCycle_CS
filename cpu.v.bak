@@ -1,4 +1,3 @@
-//TESTING
 module cpu(clk, rst_n, hlt, pc);
 input clk, rst_n; //system clock and active LOW reset, causes execution to start at 0x0000
 
@@ -73,13 +72,15 @@ memory1c D_mem(	.data_out(read_data), //to post d-mem mux
 //control assignments 
 assign next_pc = pc + 1;
 
-
 //D-mem mux
 assign write_data = (mem_to_reg) ? read_data :
-					alu_result;				
+					alu_result;
+				
 //alu src mux
 assign alu_src_data = (alu_src) ? immm_off : //decision between reg val and imm
-					read_data2;		
+					read_data2;
+					
+			
 assign jump = signals_out[6];
 assign branch = signals_out[5];
 assign mem_read = signals_out[4];
