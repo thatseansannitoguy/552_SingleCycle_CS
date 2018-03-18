@@ -12,26 +12,30 @@ wire [15:0] instr, //instruction
 			write_data, //from D-mem mux
 			alu_src_data, //from reg to alu mux
 			imm_off, //SW, LW, LHB LLB
+			pc_branch,
+			pc_branch_temp,  
 			pc_incr; //store calculated pc increment
 			
-wire [2:0] cond; 
+wire [2:0] cond; 	//conditional operation
 
-reg [2:0] flags;	//control, flags = 3'b N, V, Z
+reg [2:0] flags;	//control flags = 3'b N, V, Z
 
 //signals out designation
-//[6] Jump
+//[8] HLT
+//[7] PCS
+//[6] Jump Register
 //[5] Branch
 //[4] MemRead
 //[3] MemToReg
 //[2] MemWrite
 //[1] ALUsrc
 //[0] RegWrite	
-wire [6:0] signals_out;
+wire [8:0] signals_out;
 
 wire pc_write; //Eventually used for hazard detection
 
 //control signals set by control unit			
-wire jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
+wire hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
 
 //two instances of Memory for I-mem and D-mem
 //Instruction memory
@@ -65,7 +69,7 @@ RegisterFile reg_file(	.clk(clk),
 //ALU
 // module ALU(ALU_Out, Ovfl, ALU_In1, ALU_In2, Opcode, Flags_out);
 ALU alu_op(	.ALU_Out(alu_result),  //to D-mem and D-mem mux
-			.ALU_In1(read_data1),  //rs
+			.ALU_In1(alu_src_data_rs),  //rs
 			.ALU_In2(alu_src_data),  //rt or sign extended imm
 			.Opcode(instr[15:12]), //opcode
 			.Flags_out(flags)); //to alu control unit and the and of the branch
@@ -89,21 +93,25 @@ PC_control PC_control(	.C(cond),
 				.I(imm_off), 
 				.F(flags), 
 				.PC_in(pc), 
-				.PC_out(pc_branch));
+				.PC_out(pc_branch_temp));
 
 
 //control assignments //
 assign pc_incr = pc + 1;
-assign pc_write = 1;  
-assign pc_branch = jump ? 0: 0;
+assign pc_write = (hlt_sig) ? 1'b0: 1'b1;   
+assign pc_branch = (jump_register) ? read_data1: pc_branch_temp;
 assign cond = instr[11:9]; 
 
 //D-mem mux
 assign write_data = (mem_to_reg) ? read_data :	alu_result;				
 //alu src mux
-assign alu_src_data = (alu_src) ? imm_off : //decision between reg val and imm
-					read_data2;		
-assign jump = signals_out[6];
+assign alu_src_data_rs = (pcs) ? pc: read_data1;
+assign alu_src_data = (alu_src) ? imm_off : read_data2;	//decision between reg val and imm
+
+
+assign hlt_sig = signals_out[8]; 
+assign pcs = signals_out[7]; 		
+assign jump_register = signals_out[6];
 assign branch = signals_out[5];
 assign mem_read = signals_out[4];
 assign mem_to_reg = signals_out[3];
