@@ -10,13 +10,11 @@ wire [15:0] instr, //instruction
 			alu_result,	//to D-mem and D-mem mux
 			read_data,  //data read in D-mem to post D-mem mux
 			write_data //from D-mem mux
-			alu_src_data; //from reg to alu mux
-
+			alu_src_data, //from reg to alu mux
+			immm_off; //SW, LW, LHB LLB
 			
 wire reg [2:0] flags;		
 wire [6:0] signals_out;
-
-wire [2:0] alu_opcode;
 
 //control signals set by control unit			
 wire jump, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
@@ -34,9 +32,9 @@ memory1c I_mem(				.data_out(instr),
 							
 //control block
 //only needs opcode
-full_control control(	.Opcode(instr[15:12]), 
-						.signals_out(signals_out), 
-						.alu_op(alu_opcode));
+full_control control(	.instr(instr), 
+						.signals_out(signals_out)
+						.imm_dec(imm_off));
 
 //register file 
 //RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
@@ -55,7 +53,7 @@ RegisterFile reg_file(	.clk(clk),
 ALU alu_op(	.ALU_Out(alu_result),  //to D-mem and D-mem mux
 			.ALU_In1(read_data1),  //rs
 			.ALU_In2(alu_src_data),  //rt or sign extended imm
-			.Opcode(alu_opcode), //opcode
+			.Opcode(instr[15:12]), //opcode
 			.Flags_out(flags)); //to alu control unit and the and of the branch
 			
 //branch conditions logic? TODO? includes alu and shift op
@@ -79,8 +77,9 @@ assign write_data = (mem_to_reg) ? read_data :
 					alu_result;
 				
 //alu src mux
-assign alu_src_data = (alu_src) ? sign_extend_val : //TODO for if asserted
+assign alu_src_data = (alu_src) ? immm_off : //decision between reg val and imm
 					read_data2;
+					
 			
 assign jump = signals_out[6];
 assign branch = signals_out[5];

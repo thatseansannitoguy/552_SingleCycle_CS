@@ -1,8 +1,12 @@
-module full_control(Opcode, signals_out, alu_op);
-input [3:0] Opcode;
+module full_control(instr, signals_out, imm_dec);
+
+input [15:0] instr;
 
 output [6:0] signals_out;
-output [2:0] alu_op;
+
+output [15:0] imm_dec;
+
+wire [3:0] Opcode;
 
 //ALU Opcode specifications
 // all with leading 0
@@ -41,6 +45,8 @@ localparam BR 	= 4'b1101;
 localparam PCS	= 4'b1110;
 localparam HLT 	= 4'b1111;
 
+assign Opcode = instr[15:12];
+
 assign signals_out[6] = (	(Opcode == BR) || 
 							(Opcode == B)) ? 1'b1 : 1'b0; //Jump
 //TODO not sure about BR and B
@@ -59,17 +65,13 @@ assign signals_out[1] = (   (Opcode == SLL) ||
 							(Opcode == LW ) ||
 							(Opcode == SW ) ||
 							(Opcode == LHB) ||
-							(Opcode == LLB) ||
-							(Opcode == BR )) ? 1'b1 : 1'b0; //ALUsrc
+							(Opcode == LLB)) ? 1'b1 : 1'b0; //ALUsrc
 							
 assign signals_out[0] = (   (Opcode == B  ) ||
 							(Opcode == BR ) ||
 							(Opcode == HLT)) ? 1'b0 : 1'b1; //RegWrite
 							
-assign alu_op = ((Opcode = ADD) ||
-				 (Opcode = SW ) ||
-				 (Opcode = LW)  ||) ? ADD[2:0] :
-				alu_op[2:0];
-
-				
+assign imm_dec = ( (Opcode == LLB)	|| (Opcode == LHB) ) ? {{8{instr[7]}}, instr[7:0]} :
+				 {{12{instr[3]}}, instr[3:0]}; //ROR, SLL, SRA, LW, SW
+			
 endmodule
