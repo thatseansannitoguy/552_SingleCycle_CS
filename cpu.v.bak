@@ -47,7 +47,7 @@ memory1c I_mem(				.data_out(instr),
 							.enable(1'b1), 
 							.wr(1'b0), 
 							.clk(clk), 
-							.rst(rst_n));
+							.rst(~rst_n));
 							
 //control block
 //only needs opcode
@@ -129,6 +129,7 @@ always @(posedge clk or negedge rst_n) begin
 			pc <= (branch ? pc_branch : pc_incr);
 		end else begin
 			pc <= pc;
+			hlt <= 1; 
 		end
 	end
 end

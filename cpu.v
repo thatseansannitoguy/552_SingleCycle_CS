@@ -47,7 +47,7 @@ memory1c I_mem(				.data_out(instr),
 							.enable(1'b1), 
 							.wr(1'b0), 
 							.clk(clk), 
-							.rst(rst_n));
+							.rst(~rst_n));
 							
 //control block
 //only needs opcode
@@ -85,7 +85,7 @@ memory1c D_mem(	.data_out(read_data), //to post d-mem mux
 				.enable(mem_write | mem_read), //one of the control signals enabled 
 				.wr(mem_write), //from control
 				.clk(clk), 
-				.rst(rst_n));
+				.rst(~rst_n));
 
 				
 //PC Control 
