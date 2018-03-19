@@ -6,6 +6,7 @@ input [15:0] PC_in;
 
 output [15:0] PC_out;
 
+wire ovfl_0, ovfl_1; 
 wire [8:0] I_shift;
 wire [15:0] branch_take, normal_pc, I_input;
 
@@ -15,8 +16,9 @@ assign I_input = (I_shift[8]==1'b0) ? {7'b0000000, I_shift} :
 				 (I_shift[8]==1'b1)	? {7'b1111111, I_shift} :
 				 16'h0000;
 
-add_16bit INC_PC(.Sum(normal_pc), .A(PC_in), .B(16'h0002));
-add_16bit BRANCH_PC(.Sum(branch_take), .A(normal_pc), .B(I_input));
+// CLA_addsub_16(Sum, Ovfl, A, B, sub);
+CLA_addsub_16 INC_PC(.Sum(normal_pc), .Ovfl(ovfl_0), .A(PC_in), .B(16'h0002), .sub(1'b0));
+CLA_addsub_16  BRANCH_PC(.Sum(branch_take), .Ovfl(ovfl_1), .A(normal_pc), .B(I_input), .sub(1'b0));
 
 assign PC_out = (C==3'b000 && F[0]==1'b0) ? branch_take : 
 				(C==3'b001 && F[0]==1'b1) ? branch_take : 

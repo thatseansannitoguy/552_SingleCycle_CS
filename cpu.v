@@ -11,6 +11,7 @@ wire [15:0] instr, //instruction
 			read_data,  //data read in D-mem to post D-mem mux
 			write_data, //from D-mem mux
 			alu_src_data, //from reg to alu mux
+			alu_src_data_rs,
 			imm_off, //SW, LW, LHB LLB
 			pc_branch,
 			pc_branch_temp,  
@@ -18,7 +19,7 @@ wire [15:0] instr, //instruction
 			
 wire [2:0] cond; 	//conditional operation
 
-reg [2:0] flags;	//control flags = 3'b N, V, Z
+wire [2:0] flags;	//control flags = 3'b N, V, Z
 
 //signals out designation
 //[8] HLT
@@ -32,7 +33,7 @@ reg [2:0] flags;	//control flags = 3'b N, V, Z
 //[0] RegWrite	
 wire [8:0] signals_out;
 
-wire pc_write; //Eventually used for hazard detection
+wire pc_write; //Used for pc halt
 
 //control signals set by control unit			
 wire hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
@@ -128,6 +129,7 @@ always @(posedge clk or negedge rst_n) begin
 			pc <= (branch ? pc_branch : pc_incr);
 		end else begin
 			pc <= pc;
+			hlt <= 1; 
 		end
 	end
 end

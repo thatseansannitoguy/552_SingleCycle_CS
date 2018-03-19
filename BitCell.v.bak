@@ -4,7 +4,7 @@ input clk, rst, D, WriteEnable, ReadEnabel1, ReadEnable2;
 
 inout Bitline1, Bitline2;
 
-wire q_2_reg;
+reg q_2_reg;
 
 dff b_c( .q(q_2_reg), .d(D), .wen(WriteEnable), .clk(clk), .rst(rst));
 
