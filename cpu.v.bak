@@ -1,8 +1,8 @@
 module cpu(clk, rst_n, hlt, pc);
 input clk, rst_n; //system clock and active LOW reset, causes execution to start at 0x0000
 
-output reg hlt; //will be asserted when HLT instruction is encountered
-output reg [15:0] pc; //pc value over program execution 
+output hlt; //will be asserted when HLT instruction is encountered
+output [15:0] pc; //pc value over program execution 
 
 wire [15:0] instr, //instruction
 			read_data1, //to alu
@@ -15,7 +15,8 @@ wire [15:0] instr, //instruction
 			imm_off, //SW, LW, LHB LLB
 			pc_branch,
 			pc_branch_temp,  
-			pc_incr; //store calculated pc increment
+			pc_incr, //store calculated pc increment
+			pc_descion;
 			
 wire [2:0] cond; 	//conditional operation
 
@@ -42,6 +43,7 @@ wire hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_s
 //Instruction memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
 memory1c I_mem(				.data_out(instr),
+
 							.data_in(16'h0000), 
 							.addr(pc), 
 							.enable(1'b1), 
@@ -80,6 +82,7 @@ ALU alu_op(	.ALU_Out(alu_result),  //to D-mem and D-mem mux
 //Data memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
 memory1c D_mem(	.data_out(read_data), //to post d-mem mux
+		.data_out2(),
 				.data_in(read_data2), //from reg
 				.addr(alu_result), //from alu
 				.enable(mem_write | mem_read), //one of the control signals enabled 
@@ -96,9 +99,13 @@ PC_control PC_control(	.C(cond),
 				.PC_in(pc), 
 				.PC_out(pc_branch_temp));
 
-
+//PC reg
+//module PCReg(input clk,  input rst, input [15:0] D, input WriteReg, output [15:0] out);
+PCReg pc_reg(.clk(clk), .rst(~rst_n), .D(pc_descion), .WriteReg(1'b1), .out(pc));
+				
+				
 //control assignments //
-assign pc_incr = pc + 1;
+assign pc_incr = pc + 2; //TODO 16 bit adder
 assign pc_write = (hlt_sig) ? 1'b0: 1'b1;   
 assign pc_branch = (jump_register) ? read_data1: pc_branch_temp;
 assign cond = instr[11:9]; 
@@ -109,6 +116,7 @@ assign write_data = (mem_to_reg) ? read_data :	alu_result;
 assign alu_src_data_rs = (pcs) ? pc: read_data1;
 assign alu_src_data = (alu_src) ? imm_off : read_data2;	//decision between reg val and imm
 
+assign pc_descion = (branch) ? pc_branch : pc_incr;
 
 assign hlt_sig = signals_out[8]; 
 assign pcs = signals_out[7]; 		
@@ -121,7 +129,7 @@ assign alu_src = signals_out[1];
 assign reg_write = signals_out[0];
 
 // Program Counter
-always @(posedge clk or negedge rst_n) begin 
+/*always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
 		pc <= 16'h0000;
 	end else begin
@@ -132,6 +140,5 @@ always @(posedge clk or negedge rst_n) begin
 			hlt <= 1; 
 		end
 	end
-end
-
+end*/
 endmodule

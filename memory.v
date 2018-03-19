@@ -1,6 +1,9 @@
 //////////////////////////////////////
 //
 // Memory -- single cycle version
+//////////////////////////////////////
+//
+// Memory -- single cycle version
 //
 // written for CS/ECE 552, Spring '07
 // Pratap Ramamurthy, 19 Mar 2006
@@ -41,8 +44,8 @@ module memory1c (data_out, data_in, addr, enable, wr, clk, rst);
    wire [15:0]    data_out;
    
    reg [15:0]      mem [0:2**ADDR_WIDTH-1];
-   reg            loaded;	 
-
+   reg            loaded;
+   
    assign         data_out = (enable & (~wr))? {mem[addr[ADDR_WIDTH-1 :1]]}: 0; //Read
    initial begin
       loaded = 0;
@@ -53,8 +56,7 @@ module memory1c (data_out, data_in, addr, enable, wr, clk, rst);
          //load loadfile_all.img
          if (!loaded) begin
             $readmemh("assemblerOutput.txt", mem);
-            loaded = 1; 
-
+            loaded = 1;
          end
           
       end
