@@ -58,7 +58,7 @@ full_control control(	.instr(instr),
 //register file 
 //RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
 RegisterFile reg_file(	.clk(clk), 
-						.rst(rst_n), 
+						.rst(~rst_n), 
 						.SrcReg1(instr[7:4]), //rs
 						.SrcReg2(instr[3:0]), //rt
 						.DstReg(instr[11:8]), //rd
@@ -85,13 +85,13 @@ memory1c D_mem(	.data_out(read_data), //to post d-mem mux
 				.enable(mem_write | mem_read), //one of the control signals enabled 
 				.wr(mem_write), //from control
 				.clk(clk), 
-				.rst(rst_n));
+				.rst(~rst_n));
 
 				
 //PC Control 
 //module PC_control(C, I, F, PC_in, PC_out);
 PC_control PC_control(	.C(cond), 
-				.I(imm_off), 
+				.I(imm_off[8:0]), 
 				.F(flags), 
 				.PC_in(pc), 
 				.PC_out(pc_branch_temp));

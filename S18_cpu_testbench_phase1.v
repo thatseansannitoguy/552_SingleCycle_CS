@@ -12,7 +12,13 @@ module cpu_tb();
    wire        MemRead;
    wire [15:0] MemAddress;
    wire [15:0] MemData;
-
+   
+   /*our own*/
+   wire[8:0] signals_out;
+   wire[15:0] rs, rt;
+	/* end*/
+	
+	
    wire        Halt;         /* Halt executed and in Memory or writeback stage */
         
    integer     inst_count;
@@ -181,6 +187,9 @@ module cpu_tb();
    // Is processor halted (1 bit signal)
    
    /* Add anything else you want here */
-
+	assign signals_out = DUT.signals_out;
+	
+	assign rs = DUT.read_data1;
+	assign rt = DUT.read_data2;
    
 endmodule

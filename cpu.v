@@ -91,7 +91,7 @@ memory1c D_mem(	.data_out(read_data), //to post d-mem mux
 //PC Control 
 //module PC_control(C, I, F, PC_in, PC_out);
 PC_control PC_control(	.C(cond), 
-				.I(imm_off), 
+				.I(imm_off[8:0]), 
 				.F(flags), 
 				.PC_in(pc), 
 				.PC_out(pc_branch_temp));
