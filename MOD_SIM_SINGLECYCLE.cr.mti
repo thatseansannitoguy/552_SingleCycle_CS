@@ -96,12 +96,12 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	BitCell
 
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/CLA_addsub_16.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/CLA_addsub_16.v
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/dff.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/dff.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
--- Compiling module CLA_addsub_16
+-- Compiling module dff
 
 Top level modules:
-	CLA_addsub_16
+	dff
 
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/pc_reg.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/pc_reg.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015

@@ -61,8 +61,8 @@ full_control control(	.instr(instr),
 //RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
 RegisterFile reg_file(	.clk(clk), 
 						.rst(~rst_n), 
-						.SrcReg1(src_reg1_check), //rs - src_reg1_check
-						.SrcReg2(instr[3:0]), //rt
+						.SrcReg1(instr[7:4]), //rs - src_reg1_check
+						.SrcReg2(instr[3:0]), //rt 
 						.DstReg(instr[11:8]), //rd
 						.WriteReg(reg_write), //if the write is enabled 
 						.DstData(write_data), // comes from mux after d-mem 
