@@ -58,7 +58,7 @@ full_control control(	.instr(instr),
 //register file 
 //RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
 RegisterFile reg_file(	.clk(clk), 
-						.rst(rst_n), 
+						.rst(~rst_n), 
 						.SrcReg1(instr[7:4]), //rs
 						.SrcReg2(instr[3:0]), //rt
 						.DstReg(instr[11:8]), //rd
