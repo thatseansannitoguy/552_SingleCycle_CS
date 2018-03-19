@@ -14,7 +14,7 @@ module cpu_tb();
    wire [15:0] MemData;
    
    /*our own*/
-   wire[8:0] signals_out;
+   wire[9:0] signals_out;
    wire[15:0] rs, rt;
 	/* end*/
 	

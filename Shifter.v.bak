@@ -14,8 +14,8 @@ wire[1:0] Sel_1, Sel_2, Sel_3, Sel_4;
 //00=A, 01=B, 10=C
 wire [1:0] Mode;
 
-assign Mode = (Mode_In == 2'b10) ? 2'b11 : //ROR assignment fix
-			  Mode_In;
+assign Mode = (Mode == 2'b10) ? 2'b11 : //ROR assignment fix
+			  Mode;
 
 
 //sel[1],sel[0]

@@ -47,12 +47,12 @@ wire dont_care, dont_care2; //overflow outputs we dont care about
 CLA_addsub_16 add_sub(.Sum(CLA_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2), .sub(Opcode[0]));
 
 //modifies opcode to fit our shifter within shifter
-Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(ALU_In2[3:0]), .Mode(Opcode[1:0]));
+Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(ALU_In2[3:0]), .Mode_In(Opcode[1:0]));
   
 PSA_16bit paddsub_ops(.Sum(PADDSB_out), .Error(dont_care2), .A(ALU_In1), .B(ALU_In2));
 
-assign LLB_out = (ALU_In1 & 16'hFF00) | {{8'h00}, {ALU_In2[7:0]}};
-assign LHB_out = (ALU_In1 & 16'h00FF) | {{ALU_In2[7:0]}, {8'h00}};
+assign LLB_out = (ALU_In1 & 16'hFF00) | {8'h00, {ALU_In2[7:0]}};
+assign LHB_out = (ALU_In1 & 16'h00FF) | (ALU_In2[7:0] << 8);
 
 CLA_addsub_16 sw_lw_add(.Sum(LW_SW_out), .Ovfl(dont_care), .A(ALU_In1 & 16'hFFFE), .B(ALU_In2 << 1), .sub(1'b0));
 

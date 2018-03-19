@@ -9,7 +9,7 @@ z2
 cModel Technology
 dC:/altera_lite/16.0
 vaddsub_4bit
-Z0 !s110 1521486482
+Z0 !s110 1521492451
 !i10b 1
 !s100 lYSHPdWU:X8U8?o32PM4m0
 Ia_n>S^aL8l_DFV1zkocOZ2
@@ -23,19 +23,19 @@ Z4 OV;L;10.4d;61
 r1
 !s85 0
 31
-Z5 !s108 1521486482.000000
+Z5 !s108 1521492451.000000
 !s107 C:/shared/552_SingleCycle/552_SingleCycle/addsub_4bit.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/addsub_4bit.v|
 !i113 1
 Z6 o-work work
 vALU
-R0
+Z7 !s110 1521492452
 !i10b 1
-!s100 n>Z?d]Yke5Y=hHPHii_7`3
-IjN[dXQQ@?G:EUVDVlT;4R3
+!s100 :?D@UAbn=CiCl<=G:BZT42
+ILY@[gfIYIM87i`H]Tg>Xg2
 R1
 R2
-w1521477564
+w1521491665
 8C:/shared/552_SingleCycle/552_SingleCycle/ALU.v
 FC:/shared/552_SingleCycle/552_SingleCycle/ALU.v
 L0 1
@@ -43,14 +43,14 @@ R4
 r1
 !s85 0
 31
-R5
+Z8 !s108 1521492452.000000
 !s107 C:/shared/552_SingleCycle/552_SingleCycle/ALU.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/ALU.v|
 !i113 1
 R6
 n@a@l@u
 vBitCell
-Z7 !s110 1521486483
+R7
 !i10b 1
 !s100 L6X6nD<6>e57iMkS6_C9d0
 IFBJMRUJbg6I6P:]Gh<GBX1
@@ -64,7 +64,7 @@ R4
 r1
 !s85 0
 31
-Z8 !s108 1521486483.000000
+R8
 !s107 C:/shared/552_SingleCycle/552_SingleCycle/BitCell.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/BitCell.v|
 !i113 1
@@ -94,31 +94,31 @@ n@c@l@a_addsub_16
 vcpu
 R7
 !i10b 1
-!s100 bcYbmDC<M;^SnYi0Q?3bf1
-Ia=a:F4zba@5@:zFdIZBYk1
+!s100 BO5H4EeT[<HE=GL17A=Pe3
+I^P>KzHe1f=BAmjz;CJU240
 R1
 R2
-w1521486384
-8C:\shared\552_SingleCycle\552_SingleCycle\cpu.v
-FC:\shared\552_SingleCycle\552_SingleCycle\cpu.v
+w1521492446
+8C:/shared/552_SingleCycle/552_SingleCycle/cpu.v
+FC:/shared/552_SingleCycle/552_SingleCycle/cpu.v
 L0 1
 R4
 r1
 !s85 0
 31
 R8
-!s107 C:\shared\552_SingleCycle\552_SingleCycle\cpu.v|
-!s90 -reportprogress|300|-work|work|-stats=none|C:\shared\552_SingleCycle\552_SingleCycle\cpu.v|
+!s107 C:/shared/552_SingleCycle/552_SingleCycle/cpu.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/cpu.v|
 !i113 1
 R6
 vcpu_tb
-Z9 !s110 1521486486
+Z9 !s110 1521492455
 !i10b 1
-!s100 Q?[3TGe^FM[z3`Wf;Ba:92
-I[24PPYMP=o[S`]2nnhUYz2
+!s100 ^;dekE_cid3Fnh1Va0[ej2
+I9b7eUa1:=`09AUiJk4:fQ3
 R1
 R2
-w1521483518
+w1521490489
 8C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase1.v
 FC:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase1.v
 L0 1
@@ -126,13 +126,13 @@ R4
 r1
 !s85 0
 31
-Z10 !s108 1521486486.000000
+Z10 !s108 1521492455.000000
 !s107 C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase1.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase1.v|
 !i113 1
 R6
 vdff
-Z11 !s110 1521486484
+Z11 !s110 1521492453
 !i10b 1
 !s100 PV_CoVVQ]?nI;J@mj=Gn=3
 I9COM3odjIPNj<fHT^NY<63
@@ -146,7 +146,7 @@ R4
 r1
 !s85 0
 31
-Z12 !s108 1521486484.000000
+Z12 !s108 1521492453.000000
 !s107 C:/shared/552_SingleCycle/552_SingleCycle/dff.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/dff.v|
 !i113 1
@@ -174,11 +174,11 @@ R6
 vfull_control
 R11
 !i10b 1
-!s100 `G5fbKcJ3XHLe0UWh_5:i0
-IdjdKziaf^EZeTR@LZZY=m3
+!s100 ;o]W3K_49[AdIG:MXen^B1
+IS0@E<cmT=m2BZYDVeFAOo1
 R1
 R2
-R3
+w1521490313
 8C:/shared/552_SingleCycle/552_SingleCycle/full_control.v
 FC:/shared/552_SingleCycle/552_SingleCycle/full_control.v
 L0 1
@@ -212,7 +212,7 @@ R12
 !i113 1
 R6
 vMux_3_1
-Z13 !s110 1521486485
+R11
 !i10b 1
 !s100 ET5Sz^?4h8jKCWB?aSO`Y0
 IVJ5=CohMN]ng4keBAoUj90
@@ -233,7 +233,7 @@ R12
 R6
 n@mux_3_1
 vPC_control
-R13
+Z13 !s110 1521492454
 !i10b 1
 !s100 59?iLV]dT8DjODRAiWMiR2
 I95PHV_hbb4EaRL43@MXN73
@@ -247,30 +247,30 @@ R4
 r1
 !s85 0
 31
-Z14 !s108 1521486485.000000
+Z14 !s108 1521492454.000000
 !s107 C:/shared/552_SingleCycle/552_SingleCycle/PC_control.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/PC_control.v|
 !i113 1
 R6
 n@p@c_control
 vPCReg
-!s110 1521486487
+R9
 !i10b 1
 !s100 9DHmimeEbM;A624BC^Nf:1
-Il<ZgmmKKhOb_?jzi]oSF>1
+I_GWP5j3JC];PlDJUf2l@22
 R1
 R2
 w1521484258
-8C:\shared\552_SingleCycle\552_SingleCycle\pc_reg.v
-FC:\shared\552_SingleCycle\552_SingleCycle\pc_reg.v
+8C:/shared/552_SingleCycle/552_SingleCycle/pc_reg.v
+FC:/shared/552_SingleCycle/552_SingleCycle/pc_reg.v
 L0 1
 R4
 r1
 !s85 0
 31
-!s108 1521486487.000000
-!s107 C:\shared\552_SingleCycle\552_SingleCycle\pc_reg.v|
-!s90 -reportprogress|300|-work|work|-stats=none|C:\shared\552_SingleCycle\552_SingleCycle\pc_reg.v|
+R10
+!s107 C:/shared/552_SingleCycle/552_SingleCycle/pc_reg.v|
+!s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/pc_reg.v|
 !i113 1
 R6
 n@p@c@reg
@@ -317,7 +317,7 @@ R14
 R6
 n@read@decoder_4_16
 vRegister
-R9
+R13
 !i10b 1
 !s100 agRjZ1gSSnfemcO0l;XQa0
 IYZMX<YEPDEXVJfEjMlced3
@@ -331,7 +331,7 @@ R4
 r1
 !s85 0
 31
-R10
+R14
 !s107 C:/shared/552_SingleCycle/552_SingleCycle/Register.v|
 !s90 -reportprogress|300|-work|work|-stats=none|C:/shared/552_SingleCycle/552_SingleCycle/Register.v|
 !i113 1
@@ -361,11 +361,11 @@ n@register@file
 vShifter
 R9
 !i10b 1
-!s100 6_zzHklNKU0g6CH5JLJB82
-IC0[I^dUn=7h5aK8G7IFlD3
+!s100 ^AD<FCme7@LCGeB3e_RXi1
+I?mCB8W>WTfi11WGH^O]Tb0
 R1
 R2
-R3
+w1521488778
 8C:/shared/552_SingleCycle/552_SingleCycle/Shifter.v
 FC:/shared/552_SingleCycle/552_SingleCycle/Shifter.v
 L0 1

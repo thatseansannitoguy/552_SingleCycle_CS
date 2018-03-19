@@ -22,6 +22,7 @@ wire [2:0] cond; 	//conditional operation
 
 wire [2:0] flags;	//control flags = 3'b N, V, Z
 
+wire [3:0] src_reg1_check; //for llb and lhb
 //signals out designation
 //[8] HLT
 //[7] PCS
@@ -32,12 +33,12 @@ wire [2:0] flags;	//control flags = 3'b N, V, Z
 //[2] MemWrite
 //[1] ALUsrc
 //[0] RegWrite	
-wire [8:0] signals_out;
+wire [9:0] signals_out;
 
 wire pc_write; //Used for pc halt
 
 //control signals set by control unit			
-wire hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
+wire b_l, hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
 
 //two instances of Memory for I-mem and D-mem
 //Instruction memory
@@ -60,7 +61,7 @@ full_control control(	.instr(instr),
 //RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
 RegisterFile reg_file(	.clk(clk), 
 						.rst(~rst_n), 
-						.SrcReg1(instr[7:4]), //rs
+						.SrcReg1(src_reg1_check), //rs - src_reg1_check
 						.SrcReg2(instr[3:0]), //rt
 						.DstReg(instr[11:8]), //rd
 						.WriteReg(reg_write), //if the write is enabled 
@@ -114,8 +115,12 @@ assign write_data = (mem_to_reg) ? read_data :	alu_result;
 assign alu_src_data_rs = (pcs) ? pc: read_data1;
 assign alu_src_data = (alu_src) ? imm_off : read_data2;	//decision between reg val and imm
 
+//reg mux checking for llb lhb
+assign src_reg1_check = (b_l) ? instr[11:8] : instr[7:4];
+
 assign pc_descion = (branch) ? pc_branch : pc_incr;
 
+assign b_l = signals_out[9];
 assign hlt_sig = signals_out[8]; 
 assign pcs = signals_out[7]; 		
 assign jump_register = signals_out[6];

@@ -1,0 +1,22 @@
+	LLB R1, 0x04
+	LHB R1, 0x04
+	LLB R2, 0x72
+	LHB R2, 0x72
+	ADD R3, R2, R1
+	SUB R4, R2, R1
+	XOR R5, R2, R1
+	PADDSB R6, R2, R1
+	SLL R7, R1, 4
+	SRA R8, R2, 7
+	ROR R9, R2, 10
+	SW	R9, R1, 4
+        ADD R2, R1, R0
+        LHB R2, 0x00
+	ADD R2, R2, R2
+        ADD R1, R1, R2
+	LW	R10, R1, 0
+	LHB	R11, 0x00
+	LLB	R11, 0x28
+	BR 111, R11
+	PCS	R1
+	HLT

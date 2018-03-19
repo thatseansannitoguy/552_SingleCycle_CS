@@ -4,7 +4,7 @@ module dff (q, d, wen, clk, rst);
 
     output         q; //DFF output
     input          d; //DFF input
-    input 	   wen; //Write Enable
+    input 	   	   wen; //Write Enable
     input          clk; //Clock
     input          rst; //Reset (used synchronously)
 

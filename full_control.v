@@ -2,7 +2,7 @@ module full_control(instr, signals_out, imm_dec);
 
 input [15:0] instr;
 
-output [8:0] signals_out;
+output [9:0] signals_out;
 
 output [15:0] imm_dec;
 
@@ -48,6 +48,8 @@ localparam PCS	= 4'b1110;
 localparam HLT 	= 4'b1111;
 
 assign Opcode = instr[15:12];
+
+assign signals_out[9] = 	((Opcode == LHB) || (Opcode == LLB)) ? 1'b1 : 1'b0; //unique case for rd = rs
 
 assign signals_out[8] = 	(Opcode == HLT) ? 1'b1 : 1'b0; //HLT
 
