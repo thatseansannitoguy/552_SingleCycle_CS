@@ -40,6 +40,13 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	addsub_4bit
 
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cpu.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/cpu.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module cpu
+
+Top level modules:
+	cpu
+
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/memory.v {1 {vlog -work work -stats=none {C:\shared\552_SingleCycle\552_SingleCycle\memory.v}
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module memory1c

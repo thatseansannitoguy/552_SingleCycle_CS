@@ -23,7 +23,7 @@ output[2:0] Flags_out;
 
 // Internal Wires //
 wire[15:0] ADD_out, SUB_out, Shift_out, RED_out, PADDSB_out, LLB_out, LHB_out, LW_SW_out;
-wire Ovfl; //just to show overflow/saturation
+wire Ovfl_add, Ovfl_sub; //just to show overflow/saturation
 
 // Param Definitions //
 localparam ADD	= 4'b0000;
@@ -46,8 +46,8 @@ localparam HLT 	= 4'b1111;
 // Assignments // 
 wire dont_care, dont_care2; //overflow outputs we dont care about
 
-CLA_add_16 adder(.Sum(ADD_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2));
-CLA_sub_16 subber(.Sum(SUB_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2), .sub(1'b1));
+CLA_add_16 adder(.Sum(ADD_out), .Ovfl(Ovfl_add), .A(ALU_In1), .B(ALU_In2));
+CLA_sub_16 subber(.Sum(SUB_out), .Ovfl(Ovfl_sub), .A(ALU_In1), .B(ALU_In2), .sub(1'b1));
 
 //modifies opcode to fit our shifter within shifter
 Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(ALU_In2[3:0]), .Mode_In(Opcode[1:0]));
@@ -77,8 +77,8 @@ assign ALU_Out =
 assign Flags_out[2] = (((Opcode != PADDSB) || (Opcode != RED)) && ALU_Out[15] == 1'b1) ? 1'b1 :
 					  1'b0;
 
-assign Flags_out[1] = (Opcode == ADD && Ovfl) ? 1'b1 :
-					  (Opcode == SUB && Ovfl) ? 1'b1 :
+assign Flags_out[1] = (Opcode == ADD && Ovfl_add) ? 1'b1 :
+					  (Opcode == SUB && Ovfl_sub) ? 1'b1 :
 					  1'b0;
 
 assign Flags_out[0] = (Opcode == ADD && ALU_Out == 16'h0000) ? 1'b1 :
