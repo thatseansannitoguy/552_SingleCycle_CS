@@ -1,12 +1,12 @@
 module CLA_addsub_16(Sum, Ovfl, A, B, sub);
-input signed[15:0] A, B;
+input [15:0] A, B;
 input sub;
 
-output signed[15:0] Sum;
+output[15:0] Sum;
 output Ovfl;
 
 wire [15:0] carry;
-wire signed [15:0] Sum_temp;
+wire [15:0] Sum_temp;
 
 //full_adder_1bit(A, B, Cin, S, Cout);
 

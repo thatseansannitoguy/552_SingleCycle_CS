@@ -2,7 +2,7 @@ module full_control(instr, signals_out, imm_dec);
 
 input [15:0] instr;
 
-output [9:0] signals_out;
+output [11:0] signals_out;
 
 output [15:0] imm_dec;
 
@@ -49,6 +49,15 @@ localparam HLT 	= 4'b1111;
 
 assign Opcode = instr[15:12];
 
+assign signals_out[11] = ((Opcode == ADD) ||
+				(Opcode == SUB) ||
+				(Opcode == XOR)	||	
+				(Opcode == SLL)	||
+				(Opcode == SRA) ||
+				(Opcode == ROR)) ? 1'b1 : 1'b0;
+
+assign signals_out[10] =    ((Opcode == SW)) ? 1'b1 : 1'b0; 
+
 assign signals_out[9] = 	((Opcode == LHB) || (Opcode == LLB)) ? 1'b1 : 1'b0; //unique case for rd = rs
 
 assign signals_out[8] = 	(Opcode == HLT) ? 1'b1 : 1'b0; //HLT
@@ -77,7 +86,8 @@ assign signals_out[1] = (   	(Opcode == PCS) ||
 							
 assign signals_out[0] = (   	(Opcode == B  ) ||
 				(Opcode == BR ) ||
-				(Opcode == HLT)) ? 1'b0 : 1'b1; //RegWrite
+				(Opcode == HLT) ||
+				(Opcode == SW)) ? 1'b0 : 1'b1; //RegWrite
 							
 assign imm_dec = ( 		(Opcode == LLB)	|| (Opcode == LHB) ) ? 
 					{{8{instr[7]}}, instr[7:0]} :

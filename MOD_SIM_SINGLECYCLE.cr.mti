@@ -5,6 +5,13 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	ALU
 
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/FlagsReg.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/FlagsReg.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module FlagsReg
+
+Top level modules:
+	FlagsReg
+
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase1.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase1.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module cpu_tb
@@ -33,14 +40,7 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	addsub_4bit
 
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cpu.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/cpu.v
-Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
--- Compiling module cpu
-
-Top level modules:
-	cpu
-
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/memory.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/memory.v
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/memory.v {1 {vlog -work work -stats=none {C:\shared\552_SingleCycle\552_SingleCycle\memory.v}
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module memory1c
 
@@ -68,6 +68,13 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	PC_control
 
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/RegisterFile.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/RegisterFile.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module RegisterFile
+
+Top level modules:
+	RegisterFile
+
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/Register.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/Register.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module Register
@@ -82,19 +89,33 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	Shifter
 
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/RegisterFile.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/RegisterFile.v
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/CLA_add_16.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/CLA_add_16.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
--- Compiling module RegisterFile
+-- Compiling module CLA_add_16
 
 Top level modules:
-	RegisterFile
+	CLA_add_16
 
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/BitCell.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/BitCell.v
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/CLA_sub_16.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/CLA_sub_16.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module CLA_sub_16
+
+Top level modules:
+	CLA_sub_16
+
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/BitCell.v {1 {vlog -work work -stats=none {C:\shared\552_SingleCycle\552_SingleCycle\BitCell.v}
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module BitCell
 
 Top level modules:
 	BitCell
+
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/CLA_addsub_16.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/CLA_addsub_16.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module CLA_addsub_16
+
+Top level modules:
+	CLA_addsub_16
 
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/dff.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/dff.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015

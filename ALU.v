@@ -15,12 +15,14 @@ module ALU(ALU_Out, ALU_In1, ALU_In2, Opcode, Flags_out);
 input[15:0] ALU_In1, ALU_In2;
 input[3:0] Opcode;
 
+
 output[15:0] ALU_Out;
 
 output[2:0] Flags_out;
 
+
 // Internal Wires //
-wire[15:0] CLA_out, Shift_out, RED_out, PADDSB_out, LLB_out, LHB_out, LW_SW_out;
+wire[15:0] ADD_out, SUB_out, Shift_out, RED_out, PADDSB_out, LLB_out, LHB_out, LW_SW_out;
 wire Ovfl; //just to show overflow/saturation
 
 // Param Definitions //
@@ -44,7 +46,8 @@ localparam HLT 	= 4'b1111;
 // Assignments // 
 wire dont_care, dont_care2; //overflow outputs we dont care about
 
-CLA_addsub_16 add_sub(.Sum(CLA_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2), .sub(Opcode[0]));
+CLA_add_16 adder(.Sum(ADD_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2));
+CLA_sub_16 subber(.Sum(SUB_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2), .sub(1'b1));
 
 //modifies opcode to fit our shifter within shifter
 Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(ALU_In2[3:0]), .Mode_In(Opcode[1:0]));
@@ -54,11 +57,11 @@ PSA_16bit paddsub_ops(.Sum(PADDSB_out), .Error(dont_care2), .A(ALU_In1), .B(ALU_
 assign LLB_out = (ALU_In1 & 16'hFF00) | {8'h00, {ALU_In2[7:0]}};
 assign LHB_out = (ALU_In1 & 16'h00FF) | (ALU_In2[7:0] << 8);
 
-CLA_addsub_16 sw_lw_add(.Sum(LW_SW_out), .Ovfl(dont_care), .A(ALU_In1 & 16'hFFFE), .B(ALU_In2 << 1), .sub(1'b0));
+CLA_add_16 sw_lw_add(.Sum(LW_SW_out), .Ovfl(dont_care), .A(ALU_In1 & 16'hFFFE), .B(ALU_In2 << 1));
 
 assign ALU_Out =
-	(Opcode == ADD) ? CLA_out : 
-	(Opcode == SUB) ? CLA_out : 
+	((Opcode == ADD) || (Opcode == PCS)) ? ADD_out : 
+	(Opcode == SUB) ? SUB_out : 
 	(Opcode == RED) ? RED_out : //TODO create RED module
 	(Opcode == XOR) ? ALU_In1 ^ ALU_In2:
 	(Opcode == SLL) ? Shift_out :
