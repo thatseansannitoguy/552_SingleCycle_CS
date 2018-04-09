@@ -43,20 +43,32 @@ wire pc_write; //Used for pc halt
 //control signals set by control unit			
 wire flags_update, sw_mux, b_l, hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
 
-
 //**Registers**//
 
-//Control Pipeline Registers// TODO
-reg [5:0] Ctrl_Id_Ex;
-reg [4:0] Ctrl_Ex_Mem;
-reg [2:0] Ctrl_Mem_Wb;
+// Data Pipeline Registers
+reg [15:0] DATA_IF_ID [1:0]; 	// [0] = PC, [1] = Instruction
+reg [15:0] DATA_ID_EX [2:0]; 	// [0] = Op1, [1] = Op2, [2] = PC
+reg [15:0] DATA_EX_MEM [1:0]; 	// [0] = ALU_Result, [1] = Op2_Src 
+reg [15:0] DATA_MEM_WB [1:0]; 	// [0] = Mem_Data_Read, [1] = ALU_Result
 
-// Accessory Pipeline Registers TODO
-reg [15:0] Imm_Id_Ex;
-reg [3:0]  Reg_Id_Ex [2:0];
-reg [3:0]  Reg_Ex_Mem_Rd, 
-	   Reg_Mem_Wb_Rd,
-	   OPCODE_Id_Ex;
+// Control Pipeline Registers//
+reg [5:0] CTRL_ID_EX; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = JumpRegister //TODO
+reg [4:0] CTRL_EX_MEM; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead
+reg [2:0] CTRL_MEM_WB; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg
+
+// Accessory Extra Pipeline Registers
+reg [15:0] IMM_ID_EX; 
+reg [3:0]  REG_ID_EX [2:0];				
+reg [3:0]  REG_EX_MEM_Rd, 
+	   REG_MEM_WB_Rd, 
+	   OPCODE_ID_EX;
+reg [2:0]  FLAG;
+
+
+
+
+
+
 //TODO
 reg [2:0] flags; //control flags = 3'b N, V, Z
 
@@ -232,6 +244,7 @@ always @(posedge clk or negedge rst_n) begin
 		DATA_ID_EX[0] <= 16'h0000;
 		DATA_ID_EX[1] <= 16'h0000;
 		DATA_ID_EX[2] <= 16'b0000;
+		
 		REG_ID_EX[0]  <= 4'h0;
 		REG_ID_EX[1]  <= 4'h0;
 		REG_ID_EX[2]  <= 4'h0;

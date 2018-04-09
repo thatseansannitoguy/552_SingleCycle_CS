@@ -43,21 +43,33 @@ wire pc_write; //Used for pc halt
 //control signals set by control unit			
 wire flags_update, sw_mux, b_l, hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
 
-
 //**Registers**//
 
-//Control Pipeline Registers//
-reg [5:0] Ctrl_Id_Ex;
-reg [4:0] Ctrl_Ex_Mem;
-reg [2:0] Ctrl_;
+// Data Pipeline Registers
+reg [15:0] DATA_IF_ID [1:0]; 	// [0] = PC, [1] = Instruction
+reg [15:0] DATA_ID_EX [2:0]; 	// [0] = Op1, [1] = Op2, [2] = PC
+reg [15:0] DATA_EX_MEM [1:0]; 	// [0] = ALU_Result, [1] = Op2_Src 
+reg [15:0] DATA_MEM_WB [1:0]; 	// [0] = Mem_Data_Read, [1] = ALU_Result
 
-// Accessory Pipeline Registers
+// Control Pipeline Registers//
+reg [5:0] CTRL_ID_EX; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = JumpRegister //TODO
+reg [4:0] CTRL_EX_MEM; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead
+reg [2:0] CTRL_MEM_WB; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg
+
+// Accessory Extra Pipeline Registers
+
+
+
+
+
+
+
 reg [15:0] Imm_Id_Ex;
 reg [3:0]  Reg_Id_Ex [2:0];
 reg [3:0]  Reg_Ex_Mem_Rd, 
 	   Reg_Mem_Wb_Rd,
 	   OPCODE_Id_Ex;
-
+//TODO
 reg [2:0] flags; //control flags = 3'b N, V, Z
 
 
@@ -163,7 +175,44 @@ assign mem_write = signals_out[2];
 assign alu_src = signals_out[1];
 assign reg_write = signals_out[0];
 
-//** CONTROL PIPELINE **//
+// HAZARD DETECTION UNIT //TODO
+HDU hdu(
+	.opcode(IF_ID_Opcode),
+	.if_id_rs(IF_ID_Rs), 
+	.if_id_rt(IF_ID_Rt), 
+	.id_ex_rt(REG_ID_EX[ID_EX_Rd]), 
+	.id_ex_mr(CTRL_ID_EX[MemRead]),
+
+	.pc_write(pc_write), 
+	.if_id_write(if_id_write), 
+	.stall(stall)
+);
+
+// FORWARDING UNIT //TODO
+FU forward_unit(
+	.id_ex_rt(REG_ID_EX[ID_EX_Rt]), 
+	.id_ex_rs(REG_ID_EX[ID_EX_Rs]), 
+	.ex_mem_rd(REG_EX_MEM_Rd), 
+	.mem_wb_rd(REG_MEM_WB_Rd), 
+	.ex_mem_rw(CTRL_EX_MEM[RegWrite]), 
+	.mem_wb_rw(CTRL_MEM_WB[RegWrite]), 
+
+	.forwarda(forwardA), 
+	.forwardb(forwardB)
+);
+
+// FORWARDING FOR ALU OP 1 //TODO
+assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :
+	      (forwardA == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
+	      (forwardA == SRC_MEM_WB) ? write_data : DATA_ID_EX[ID_EX_OP1];
+
+// FORWARDING FOR ALU OP 2 //TODO
+assign op_2 = (forwardB == SRC_ID_EX)  ? DATA_ID_EX_OP2 : 
+	      (forwardB == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
+	      (forwardB == SRC_MEM_WB) ? write_data : DATA_ID_EX_OP2;
+
+
+//** CONTROL PIPELINE **// //TODO
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
 		Ctrl_Id_Ex  <= 6'b000000;
@@ -186,6 +235,81 @@ always @(posedge clk or negedge rst_n) begin
 	end
 end
 
+//** DATA PIPELINE **// //TODO
+always @(posedge clk or negedge rst_n) begin
+	if (~rst_n) begin
+		DATA_IF_ID[0] <= 16'h0000;
+		DATA_IF_ID[1] <= 16'h0000;
+
+		DATA_ID_EX[0] <= 16'h0000;
+		DATA_ID_EX[1] <= 16'h0000;
+		DATA_ID_EX[2] <= 16'b0000;
+		
+		REG_ID_EX[0]  <= 4'h0;
+		REG_ID_EX[1]  <= 4'h0;
+		REG_ID_EX[2]  <= 4'h0;
+		OPCODE_ID_EX  <= 4'h0;
+		IMM_ID_EX     <= 16'h0000;
+
+		DATA_EX_MEM[0] <= 16'h0000;
+		DATA_EX_MEM[1] <= 16'h0000;
+		REG_EX_MEM_Rd  <= 4'h0;
+		FLAG           <= 3'b000;
+
+		DATA_MEM_WB[0] <= 16'h0000;
+		DATA_MEM_WB[1] <= 16'h0000;
+		REG_MEM_WB_Rd  <= 4'h0;
+	end else if (mem_ready) begin
+		if (branch) begin
+			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
+			DATA_IF_ID[IF_ID_INST] <= 16'h0000;
+		end else if (if_id_write) begin
+			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
+			DATA_IF_ID[IF_ID_INST] <= instr;
+		end else begin
+			DATA_IF_ID[IF_ID_PC]   <= DATA_IF_ID[IF_ID_PC];
+			DATA_IF_ID[IF_ID_INST] <= DATA_IF_ID[IF_ID_INST];
+		end
+
+		DATA_ID_EX[ID_EX_OP1]    <= read_1;
+		DATA_ID_EX[ID_EX_OP2]    <= read_2;
+		DATA_ID_EX[ID_EX_PC]     <= DATA_IF_ID[IF_ID_PC];
+		REG_ID_EX[ID_EX_Rd]	 <= IF_ID_Rd;
+		REG_ID_EX[ID_EX_Rs]	 <= IF_ID_Rs;
+		REG_ID_EX[ID_EX_Rt]	 <= IF_ID_Rt;
+		OPCODE_ID_EX		 <= IF_ID_Opcode;
+		IMM_ID_EX		 <= IF_ID_Imm;
+
+		DATA_EX_MEM[EX_MEM_RSLT] <= result;
+		DATA_EX_MEM[EX_MEM_OP2]  <= op_2;
+		REG_EX_MEM_Rd		 <= REG_ID_EX[ID_EX_Rd];
+		FLAG                     <= flags;
+
+		DATA_MEM_WB[MEM_WB_RD]   <= dm_read;
+		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
+		REG_MEM_WB_Rd		 <= REG_EX_MEM_Rd;
+	end else begin
+		DATA_IF_ID[IF_ID_PC]   <= DATA_IF_ID[IF_ID_PC];
+		DATA_IF_ID[IF_ID_INST] <= DATA_IF_ID[IF_ID_INST];
+
+		DATA_ID_EX[ID_EX_OP1]    <= DATA_ID_EX[ID_EX_OP1];
+		DATA_ID_EX[ID_EX_OP2]    <= DATA_ID_EX[ID_EX_OP2];
+		DATA_ID_EX[ID_EX_PC]     <= DATA_ID_EX[ID_EX_PC];
+		REG_ID_EX[ID_EX_Rs]	 <= REG_ID_EX[ID_EX_Rs];
+		REG_ID_EX[ID_EX_Rt]	 <= REG_ID_EX[ID_EX_Rt];
+		OPCODE_ID_EX		 <= OPCODE_ID_EX;
+		IMM_ID_EX		 <= IMM_ID_EX;
+
+		DATA_EX_MEM[EX_MEM_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
+		DATA_EX_MEM[EX_MEM_OP2]  <= DATA_EX_MEM[EX_MEM_OP2];
+		REG_EX_MEM_Rd		 <= REG_EX_MEM_Rd;
+		FLAG                     <= FLAG;
+
+		DATA_MEM_WB[MEM_WB_RD]   <= DATA_MEM_WB[MEM_WB_RD];
+		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_MEM_WB[MEM_WB_RSLT];
+		REG_MEM_WB_Rd		 <= REG_MEM_WB_Rd;
+	end
+end
 
 
 endmodule
