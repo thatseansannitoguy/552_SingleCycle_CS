@@ -2,11 +2,14 @@ module full_control(instr, signals_out, imm_dec);
 
 input [15:0] instr;
 
-output [11:0] signals_out;
+//all control signals and conditions and read signals
+output reg [11:0] signals_out;
 
-output [15:0] imm_dec;
+//register addr, and opcode present based off opcode
+output reg [3:0] rd, rs, rt, opcode;
 
-wire [3:0] Opcode;
+//immediate conditionally assinged based on instruction
+output reg [15:0] imm_dec;
 
 //ALU Opcode specifications
 // all with leading 0
@@ -47,8 +50,300 @@ localparam BR 	= 4'b1101;
 localparam PCS	= 4'b1110;
 localparam HLT 	= 4'b1111;
 
-assign Opcode = instr[15:12];
+localparam ON = 1'b1;
+localparam OFF = 1'b0;
 
+localparam NO_SET_SIGNALS = 9'b000000000;
+localparam NO_SET_IMM = 16'h0000;
+localparam NO_SET_REG = 4'h0;
+
+
+//begining of case assignment based on opcode
+always@(*) begin
+		opcode = instr(15:12]; //opcode assignment
+		case (opcode)
+				ADD: begin
+						if(instr != 16'h0000) begin	
+								signals_out[0] = ON; //RegWrite		
+								signals_out[1] = OFF; //ALUsrc
+								signals_out[2] = OFF; //MemWrite
+								signals_out[3] = OFF; //MemToReg
+								signals_out[4] = OFF; //MemRead
+								signals_out[5] = OFF; //Branch 
+								signals_out[6] = OFF; //Jump
+								signals_out[7] = OFF; //PCS cond
+								signals_out[8] = OFF; //Halt
+								
+						end else begin
+								signals_out = NO_SET_SIGNALS;
+						end
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = instr[3:0];
+							
+							imm_dec = NO_SET_IMM;
+					end
+				SUB: begin	
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = OFF; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = instr[3:0];
+							
+							imm_dec = NO_SET_IMM;
+					end
+				RED: begin
+						//TODO
+						signals_out = NO_SET_SIGNALS;
+				
+					end
+				XOR: begin 
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = OFF; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = instr[3:0];
+							
+							imm_dec = NO_SET_IMM;
+					end
+				SLL: begin	
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = ON; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = NO_SET_REG;
+							
+							imm_dec = {12'h000, instr[3:0]};
+					end
+				SRA: begin 
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = ON; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = NO_SET_REG;
+							
+							imm_dec = {12'h000, instr[3:0]};
+					end
+				ROR: begin
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = ON; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = NO_SET_REG;
+							
+							imm_dec = {12'h000, instr[3:0]};
+					end
+				PADDSB: begin 
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = OFF; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = instr[3:0];
+							
+							imm_dec = NO_SET_IMM;
+					end
+				LW: begin
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = ON; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = ON; //MemToReg
+							signals_out[4] = ON; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = NO_SET_REG;
+							
+							imm_dec = {{12{instr[3]}}, instr[3:0]}; //signed offset
+					end
+				SW: begin
+							signals_out[0] = OFF; //RegWrite		
+							signals_out[1] = ON; //ALUsrc
+							signals_out[2] = ON; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = NO_SET_REG;
+							rs = instr[7:4];
+							rt = instr[11:8];
+							
+							imm_dec = {{12{instr[3]}}, instr[3:0]}; //signed offset
+					end
+				LHB: begin
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = ON; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[11:8];
+							rt = NO_SET_REG;
+							
+							imm_dec = {8'h00, instr[7:0]};
+					end
+				LLB: begin
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = ON; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = NO_SET_REG;
+							rt = NO_SET_REG;
+							
+							imm_dec = {{8{instr[7]}}, instr[7:0]};
+					end
+				B: begin
+							signals_out[0] = OFF; //RegWrite		
+							signals_out[1] = OFF; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = ON; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = NO_SET_REG;
+							rs = NO_SET_REG;
+							rt = NO_SET_REG;
+							
+							imm_dec = {{7{instr[7]}}, instr[8:0]}; //signed offset
+				
+					end
+					BR: begin 
+							signals_out[0] = OFF; //RegWrite		
+							signals_out[1] = OFF; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = ON; //Branch 
+							signals_out[6] = ON; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = NO_SET_REG;
+							rs = instr[7:4];
+							rt = NO_SET_REG;
+							
+							imm_dec = NO_SET_IMM; //signed offset
+				
+					end
+					PCS: begin
+							signals_out[0] = ON; //RegWrite		
+							signals_out[1] = ON; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = ON; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = NO_SET_REG;
+							rt = NO_SET_REG;
+							
+							imm_dec = NO_SET_IMM;
+					
+					end
+					HALT: begin
+							signals_out[0] = OFF; //RegWrite		
+							signals_out[1] = OFF; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //Jump
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = ON; //Halt
+							
+							rd = NO_SET_REG;
+							rs = NO_SET_REG;
+							rt = NO_SET_REG;
+							
+							imm_dec = NO_SET_IMM;
+					end
+					default: begin
+							signals_out = NO_SET_SIGNALS;
+							
+							rd = NO_SET_REG;
+							rs = NO_SET_REG;
+							rt = NO_SET_REG;
+							
+							imm_dec = NO_SET_IMM;
+							
+					end
+			endcase
+	end
+			
+/*			
 assign signals_out[11] = ((Opcode == ADD) ||
 				(Opcode == SUB) ||
 				(Opcode == XOR)	||	
@@ -93,5 +388,6 @@ assign imm_dec = ( 		(Opcode == LLB)	|| (Opcode == LHB) ) ?
 					{{8{instr[7]}}, instr[7:0]} :
 				(Opcode == PCS) ? 16'h0002 :
 				 	{{12{instr[3]}}, instr[3:0]}; //ROR, SLL, SRA, LW, SW
+*/
 			
 endmodule
