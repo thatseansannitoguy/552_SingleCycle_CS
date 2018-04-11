@@ -89,7 +89,7 @@ wire [15:0] instr, //instruction
 			read_data1, //to alu
 			read_data2, //to alu_mux and to d-mem write data
 			alu_result,	//to D-mem and D-mem mux
-			read_data,  //data read in D-mem to post D-mem mux
+			mem_read_data,  //data read in D-mem to post D-mem mux
 			write_data, //from D-mem mux
 			alu_src_data, //from reg to alu mux
 			alu_src_data_rs,
@@ -134,7 +134,7 @@ memory1c I_mem(
 //Data memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
 memory1c D_mem(	
-				.data_out(DATA_MEM_WB[MEM_WB_DATA]), //to post d-mem mux
+				.data_out(mem_read_data), //to post d-mem mux
 				.data_in(DATA_EX_MEM[EX_MEM_OP2]), //from reg read_data2
 				.addr(DATA_EX_MEM[EX_MEM_RESULT]), //from alu
 				.enable(CTRL_EX_MEM[CONTROL_MEM_WRITE] | CTRL_EX_MEM[CONTROL_MEM_READ]), //one of the control signals enabled 
@@ -237,7 +237,7 @@ assign op_2 = (forwardB == SRC_ID_EX)  ? DATA_ID_EX_OP2 :
 always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
 		pc <= 16'h0000;
-	end else if (pc_write & mem_ready) begin
+	end else if (pc_write) begin
 		pc <= (branch ? pc_branch : pc_incr);
 	end else begin
 		pc <= pc;
@@ -252,46 +252,42 @@ always @(posedge clk or negedge rst_n) begin
 		Ctrl_Mem_Wb <= 3'b000;
 
 		hlt	    <= 1'b0;
-	end else if (mem_ready) begin
-		CTRL_ID_EX  <= (stall & ~ctrl_signals[Halt]) ? 6'b00000 : ctrl_signals[Jal:Halt];
-		CTRL_EX_MEM <= CTRL_ID_EX[MemRead:Halt];
-		CTRL_MEM_WB <= CTRL_EX_MEM[MemToReg:Halt];
+	end else begin
+		// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = PCS
+		CTRL_ID_EX  <= (stall & ~signals_out[Halt]) ? 6'b000000 : {signals_out[PCS], signals_out[MemRead], signal_out[MemWrite], 
+																   signals_out[MemToReg], signals_out[RegWrite], signal_out[Halt]};
+		CTRL_EX_MEM <= CTRL_ID_EX[4:0];
+		CTRL_MEM_WB <= CTRL_EX_MEM[2:0];
 
 		hlt 	    <= CTRL_EX_MEM[Halt];
-	end else begin
-		CTRL_ID_EX  <= CTRL_ID_EX;
-		CTRL_EX_MEM <= CTRL_EX_MEM;
-		CTRL_MEM_WB <= CTRL_MEM_WB;
-
-		hlt 	    <= hlt;
 	end
 end
 
 //**Data Pipeline**//
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
-		DATA_IF_ID[0] <= 16'h0000;
-		DATA_IF_ID[1] <= 16'h0000;
-
-		DATA_ID_EX[0] <= 16'h0000;
-		DATA_ID_EX[1] <= 16'h0000;
-		DATA_ID_EX[2] <= 16'b0000;
+		DATA_IF_ID[IF_ID_PC] <= 16'h0000;
+		DATA_IF_ID[IF_ID_INST] <= 16'h0000;
 		
-		REG_ID_EX[0]  <= 4'h0;
-		REG_ID_EX[1]  <= 4'h0;
-		REG_ID_EX[2]  <= 4'h0;
+		DATA_ID_EX[ID_EX_OP1] <= 16'h0000;
+		DATA_ID_EX[ID_EX_OP2] <= 16'h0000;
+		DATA_ID_EX[ID_EX_PC] <= 16'h0000;
+
+		REG_ID_EX[ID_EX_Rd]  <= 4'h0;
+		REG_ID_EX[ID_EX_Rs]  <= 4'h0;
+		REG_ID_EX[ID_EX_Rt]  <= 4'h0;
 		OPCODE_ID_EX  <= 4'h0;
 		IMM_ID_EX     <= 16'h0000;
 
-		DATA_EX_MEM[0] <= 16'h0000;
-		DATA_EX_MEM[1] <= 16'h0000;
+		DATA_EX_MEM[EX_MEM_RESULT] <= 16'h0000;
+		DATA_EX_MEM[EX_MEM_RESULT] <= 16'h0000;
 		REG_EX_MEM_Rd  <= 4'h0;
-		FLAG           <= 3'b000;
+		FLAGS          <= 3'b000;
 
-		DATA_MEM_WB[0] <= 16'h0000;
-		DATA_MEM_WB[1] <= 16'h0000;
+		DATA_MEM_WB[MEM_WB_DATA] <= 16'h0000;
+		DATA_MEM_WB[MEM_WB_RESULT] <= 16'h0000;
 		REG_MEM_WB_Rd  <= 4'h0;
-	end else if (mem_ready) begin
+	end else begin
 		if (branch) begin
 			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
 			DATA_IF_ID[IF_ID_INST] <= 16'h0000;
@@ -312,34 +308,15 @@ always @(posedge clk or negedge rst_n) begin
 		OPCODE_ID_EX		 <= IF_ID_Opcode;
 		IMM_ID_EX		 <= IF_ID_Imm;
 
-		DATA_EX_MEM[EX_MEM_RSLT] <= result;
+		DATA_EX_MEM[EX_MEM_RESULT] <= alu_result;
 		DATA_EX_MEM[EX_MEM_OP2]  <= op_2;
 		REG_EX_MEM_Rd		 <= REG_ID_EX[ID_EX_Rd];
-		FLAG                     <= flags;
+		FLAGS                    <= flags_out;
 
-		DATA_MEM_WB[MEM_WB_RD]   <= dm_read;
-		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
+		DATA_MEM_WB[MEM_WB_DATA]   <= mem_read_data;
+		DATA_MEM_WB[MEM_WB_RESULT] <= DATA_EX_MEM[EX_MEM_RESULT];
 		REG_MEM_WB_Rd		 <= REG_EX_MEM_Rd;
-	end else begin
-		DATA_IF_ID[IF_ID_PC]   <= DATA_IF_ID[IF_ID_PC];
-		DATA_IF_ID[IF_ID_INST] <= DATA_IF_ID[IF_ID_INST];
-
-		DATA_ID_EX[ID_EX_OP1]    <= DATA_ID_EX[ID_EX_OP1];
-		DATA_ID_EX[ID_EX_OP2]    <= DATA_ID_EX[ID_EX_OP2];
-		DATA_ID_EX[ID_EX_PC]     <= DATA_ID_EX[ID_EX_PC];
-		REG_ID_EX[ID_EX_Rs]	 <= REG_ID_EX[ID_EX_Rs];
-		REG_ID_EX[ID_EX_Rt]	 <= REG_ID_EX[ID_EX_Rt];
-		OPCODE_ID_EX		 <= OPCODE_ID_EX;
-		IMM_ID_EX		 <= IMM_ID_EX;
-
-		DATA_EX_MEM[EX_MEM_RSLT] <= DATA_EX_MEM[EX_MEM_RSLT];
-		DATA_EX_MEM[EX_MEM_OP2]  <= DATA_EX_MEM[EX_MEM_OP2];
-		REG_EX_MEM_Rd		 <= REG_EX_MEM_Rd;
-		FLAG                     <= FLAG;
-
-		DATA_MEM_WB[MEM_WB_RD]   <= DATA_MEM_WB[MEM_WB_RD];
-		DATA_MEM_WB[MEM_WB_RSLT] <= DATA_MEM_WB[MEM_WB_RSLT];
-		REG_MEM_WB_Rd		 <= REG_MEM_WB_Rd;
+	
 	end
 end
 

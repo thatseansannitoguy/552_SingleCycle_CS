@@ -28,17 +28,17 @@ end
 
 endmodule
 
-module BR_forward(ctrl_jr, id_rs, ex_rd, forward);
+//module BR_forward(ctrl_jr, id_rs, ex_rd, forward);
 
-input [3:0] id_rs, ex_rd;
-input ctrl_jr;
-output reg forward;
+//input [3:0] id_rs, ex_rd;
+//input ctrl_jr;
+//output reg forward;
 
-localparam FORWARD    = 1'b1;
-localparam NO_FORWARD = 1'b0;
+//localparam FORWARD    = 1'b1;
+//localparam NO_FORWARD = 1'b0;
 
-always @(*) begin
-	forward = (ctrl_jr && (id_rs == ex_rd)) ? FORWARD : NO_FORWARD;
-end
+//always @(*) begin
+	//forward = (ctrl_jr && (id_rs == ex_rd)) ? FORWARD : NO_FORWARD;
+//end
 
-endmodule
+//endmodule
