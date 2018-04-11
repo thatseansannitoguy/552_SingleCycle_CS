@@ -1,8 +1,65 @@
+//TOP LEVEL CPU MODULE ECE552
 module cpu(clk, rst_n, hlt, pc);
+
+//**Module I/O**//
+
+//Inputs
 input clk, rst_n; //system clock and active LOW reset, causes execution to start at 0x0000
 
+//Outputs
 output hlt; //will be asserted when HLT instruction is encountered
 output [15:0] pc; //pc value over program execution 
+
+//**Global Variables**//
+
+//Flag Indexes
+localparam Z = 0;	//Zero 
+localparam V = 1; 	//Overflow 
+localparam Z = 2;	//Zero 
+
+//Control Signal Names
+localparam Halt 			= 8;
+localparam PCS 				= 7;
+localparam BranchRegister 	= 6;
+localparam Branch 			= 5;
+localparam MemRead 			= 4;
+localparam MemToReg 		= 3;
+localparam MemWrite  		= 2;
+localparam ALUSrc 			= 1;
+localparam RegWrite 		= 0;
+
+//Data Pipeline Indexes
+localparam IF_ID_PC = 0;			//PC  
+localparam IF_ID_INST = 1;			//Instruction 
+
+localparam ID_EX_OP1 = 0;			//OP #1 
+localparam ID_EX_OP2 = 1;			//OP #2  
+localparam ID_EX_PC = 2;			//PC
+
+localparam EX_MEM_RESULT = 0;		//Alu Result
+localparam EX_MEM_OP2 = 1; 			//OP #2
+
+localparam MEM_WB_DATA = 0; 		//Retrieved Data from Mem
+localparam MEM_WB_RESULT = 1;		//Write Back Result
+
+//Control Pipeline Indexes
+// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = JumpRegister
+localparam CONTROL_HALT = 0; 
+localparam CONTROL_REG_WRITE = 1; 
+localparam CONTROL_MEM_TO_REG = 2; 
+localparam CONTROL_MEM_WRITE = 3; 
+localparam CONTROL_MEM_READ = 4; 
+localparam CONTROL_JUMP_REG = 5; 
+
+//Other Globals
+localparam ID_EX_Rd    = 0;			//Rd Index
+localparam ID_EX_Rs    = 1;			//Rs Index
+localparam ID_EX_Rt    = 2;			//Rt Index
+
+//TODO
+//localparam SRC_ID_EX  = 2'b00;
+//localparam SRC_EX_MEM = 2'b10;
+//localparam SRC_MEM_WB = 2'b01;
 
 //**Registers**//
 
@@ -18,18 +75,17 @@ reg [4:0] CTRL_EX_MEM; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = Mem
 reg [2:0] CTRL_MEM_WB; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg
 
 //Extra Pipeline Registers
-reg [15:0] IMM_ID_EX; 
-reg [3:0]  REG_ID_EX [2:0];				
-reg [3:0]  REG_EX_MEM_Rd, 
-	   REG_MEM_WB_Rd, 
-	   OPCODE_ID_EX;
-reg [2:0]  FLAG;
-
-//TODO 
-reg [2:0] flags; //control flags = 3'b N, V, Z
+reg [15:0] IMM_ID_EX;		//Stores Immediate
+reg [3:0]  REG_ID_EX [2:0];	//Stores Rd[0], Rs[1], Rt[2] 
+reg [3:0]  REG_EX_MEM_Rd, 	//Stores Dst Reg
+	REG_MEM_WB_Rd, 			//Stores Dst Reg
+	OPCODE_ID_EX;			//Stores Opcode
+reg [2:0]  FLAGS;			//Stores Flags Set in ALU
 
 //**Wires**//
-wire [15:0] instr, //instruction
+
+//Internal Wires
+wire [15:0] instr, //instruction 
 			read_data1, //to alu
 			read_data2, //to alu_mux and to d-mem write data
 			alu_result,	//to D-mem and D-mem mux
@@ -41,244 +97,162 @@ wire [15:0] instr, //instruction
 			pc_branch,
 			pc_branch_temp,  
 			pc_incr, //store calculated pc increment
-			pc_descion;
-			
-//For pipeline instruction registering			
-wire [3:0] IF_ID_Rd, 
+			pc_descion,
+			IF_ID_Imm;
+
+wire [11:0] signals_out; 	//Signal control wires	
+wire [2:0]  flags_out;			//control flags = 3'b N, V, Z
+
+wire [3:0] IF_ID_Rd, 		//To hold initial decode values
 	   IF_ID_Rs,
 	   IF_ID_Rt,
-	   IF_ID_Opcode;
-			
-wire [2:0] cond; 	//conditional operation
-wire[2:0] flags_out, flags_reg_input; 
+	   IF_ID_Opcode;					
+wire [2:0] IF_ID_Cond; 		//conditional operation
 
-//wire [2:0] flags;	//control flags = 3'b N, V, Z
+wire if_id_write;			//Hazard Unit Driven, tells when to pull instruction enable
+wire stall; 				//Hazard Unit Driven, tells when to stall with NOPs
+wire pc_write; 				//Hazard Unit Driven, tells when to write/ not write to pc
+wire branch; 				//Branch unit driven, tells when a branch is taken or not
 
-
-//signals out designation
-//[10] SW mux
-//[9] Byte Loads
-//[8] HLT
-//[7] PCS
-//[6] Jump Register
-//[5] Branch
-//[4] MemRead
-//[3] MemToReg
-//[2] MemWrite
-//[1] ALUsrc
-//[0] RegWrite	
-wire [11:0] signals_out;
-
-wire pc_write; //Used for pc halt
+//TODO
+//wire [1:0] read_signals, forwardA, forwardB;
+//wire pc_write, if_id_write, stall, mem_ready, branch, jal, jr_forward;
+	
+//wire pc_write; //Used for pc halt
 
 //control signals set by control unit			
-wire flags_update, sw_mux, b_l, hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
-
+//wire flags_update, sw_mux, b_l, hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
 
 
 //** MODULES ** //
 
 //Instruction memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
-memory1c I_mem(				.data_out(instr),
+memory1c I_mem(				
+							.data_out(instr),
 							.data_in(16'h0000), 
 							.addr(pc), 
-							.enable(1'b1), 
+							.enable(if_id_write), 
 							.wr(1'b0), 
 							.clk(clk), 
 							.rst(~rst_n));
 					
 //Data memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
-memory1c D_mem(	.data_out(DATA_MEM_WB[0]), //to post d-mem mux
-				.data_in(DATA_EX_MEM[1]), //from reg read_data2
-				.addr(DATA_EX_MEM[0]), //from alu
-				.enable(CTRL_EX_MEM[3] | CTRL_EX_MEM[4]), //one of the control signals enabled 
-				.wr(CTRL_EX_MEM[3]), //from control
+memory1c D_mem(	
+				.data_out(DATA_MEM_WB[MEM_WB_DATA]), //to post d-mem mux
+				.data_in(DATA_EX_MEM[EX_MEM_OP2]), //from reg read_data2
+				.addr(DATA_EX_MEM[EX_MEM_RESULT]), //from alu
+				.enable(CTRL_EX_MEM[CONTROL_MEM_WRITE] | CTRL_EX_MEM[CONTROL_MEM_READ]), //one of the control signals enabled 
+				.wr(CTRL_EX_MEM[CONTROL_MEM_WRITE]), //from control
 				.clk(clk), 
 				.rst(~rst_n));
 
 //Register file 
 //RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
-RegisterFile reg_file(	.clk(clk), 
+RegisterFile reg_file(	
+						.clk(clk), 
 						.rst(~rst_n), 
-						.SrcReg1(src_reg1_check), //rs - src_reg1_check instr[7:4]
-						.SrcReg2(src_sw), //rt 
-						.DstReg(REG_MEM_WB_Rd), //rd
-						.WriteReg(CTRL_MEM_WB[1]), //if the write is enabled 
+						.SrcReg1(IF_ID_Rs), //rs 
+						.SrcReg2(IF_ID_Rt), //rt 
+						.DstReg(REG_MEM_WB_Rd), //rd from Mem Wb Pipeline Register
+						.WriteReg(CTRL_MEM_WB[CONTROL_REG_WRITE]), //if the write is enabled 
 						.DstData(write_data), // comes from mux after d-mem 
 						.SrcData1(read_data1),  //rs
 						.SrcData2(read_data2)); //rt to alu_mux and to write data D-mem
 
-
-
-
-
-
-						
-
-//**Continuous Assignment**//
-
-//Register file muxes
-assign src_reg1_check = ((b_l) ? {instr[11:8]} : {instr[7:4]});
-assign src_sw = (sw_mux) ? instr[11:8] : instr[3:0];
-
-//
-
-//Control signals assign
-assign flags_update = signals_out[11]; 
-assign sw_mux = signals_out[10];
-assign b_l = signals_out[9];
-assign hlt_sig = signals_out[8]; 
-assign pcs = signals_out[7]; 		
-assign jump_register = signals_out[6];
-assign branch = signals_out[5];
-assign mem_read = signals_out[4];
-assign mem_to_reg = signals_out[3];
-assign mem_write = signals_out[2];
-assign alu_src = signals_out[1];
-assign reg_write = signals_out[0];
-
-
-
-
-
-
-
-assign pc_incr = pc + 2; 
-assign pc_write = (hlt_sig) ? 1'b0: 1'b1;   
-assign pc_branch = (jump_register) ? read_data1: pc_branch_temp;
-assign cond = instr[11:9]; 
-
-
-
-
-
-
-
-							
-
-
-
-		//control block
-//only needs opcode
-full_control control(	.instr(instr), 
+//Control Block
+//full_control(instr, signals_out, imm_dec, rd, rs, rt, cond, opcode);
+full_control control(	
+						.instr(DATA_IF_ID[IF_ID_INST]), 
 						.signals_out(signals_out),
-						.imm_dec(imm_off));
-
-
+						.imm_dec(IF_ID_Imm),
+						.rd(IF_ID_Rd),
+						.rs(IF_ID_Rs),
+						.rt(IF_ID_Rt), 
+						.cond(IF_ID_Cond),
+						.opcode(IF_ID_Opcode));
+						
 //ALU
-// module ALU(ALU_Out, Ovfl, ALU_In1, ALU_In2, Opcode, Flags_out);
-ALU alu_op(	.ALU_Out(alu_result),  //to D-mem and D-mem mux
-			.ALU_In1(alu_src_data_rs),  //rs
-			.ALU_In2(alu_src_data),  //rt or sign extended imm
+//ALU(ALU_Out, ALU_In1, ALU_In2, Opcode, Flags_out);
+ALU alu_op(	
+			.ALU_Out(alu_result),  //to D-mem and D-mem mux
+			.ALU_In1(op_1),  //rs 	
+			.ALU_In2(op_2),  //rt or sign extended imm
 			.Opcode(OPCODE_ID_EX), //opcode
-			.Flags_out(flags_out)); //to alu control unit and the and of the branch				
+			.Flags_out(flags_out)); //to alu control unit and the and of the branch	
 
+//Forwarding Unit
+//forward_unit(id_ex_rt, id_ex_rs, ex_mem_rd, mem_wb_rd, ex_mem_rw, mem_wb_rw, forwarda, forwardb);
+FwardUnit forward_unit(
+	.id_ex_rt(REG_ID_EX[ID_EX_Rt]), 
+	.id_ex_rs(REG_ID_EX[ID_EX_Rs]), 
+	.ex_mem_rd(REG_EX_MEM_Rd), 
+	.mem_wb_rd(REG_MEM_WB_Rd), 
+	.ex_mem_rw(CTRL_EX_MEM[CONTROL_REG_WRITE]), 
+	.mem_wb_rw(CTRL_MEM_WB[CONTROL_REG_WRITE]), 
+
+	.forwarda(forwardA), 
+	.forwardb(forwardB)
+);
 			
-
-
-
-				
-//PC Control 
-//module PC_control(C, I, F, PC_in, PC_out);
-PC_control PC_control(	.C(cond), 
-				.I(IMM_ID_EX), 
-				.F(flags), 
-				.PC_in(pc), 
-				.PC_out(pc_branch_temp));
-
-//PC reg
-//module PCReg(input clk,  input rst, input [15:0] D, input WriteReg, output [15:0] out);
-//PCReg pc_reg(.clk(clk), .rst(~rst_n), .D(pc_descion), .WriteReg(1'b1), .out(pc));
-
-//PC reg
-//module PCReg(input clk,  input rst, input [15:0] D, input WriteReg, output [15:0] out);
-FlagsReg flags_reg(.clk(clk), .rst(~rst_n), .D(flags_reg_input), .WriteReg(1'b1), .out(flags));
-				
-				
-
-assign pc_incr = pc + 2; 
-assign pc_write = (hlt_sig) ? 1'b0: 1'b1;   
-assign pc_branch = (jump_register) ? read_data1: pc_branch_temp;
-assign cond = instr[11:9]; 
-
-//D-mem mux
-assign write_data = (mem_to_reg) ? read_data :	alu_result;				
-//alu src mux
-assign alu_src_data_rs = (pcs) ? pc : read_data1;
-assign alu_src_data = (alu_src) ? imm_off : read_data2;	//decision between reg val and imm
-
-
-
-assign flags_reg_input = (flags_update) ? flags_out : flags;
-
-//assign pc_descion = (branch) ? pc_branch : pc_incr;
-
-
-
-assign hlt = (pc_write) ? 1'b0 : 1'b1;
-
-assign flags_update = signals_out[11]; 
-assign sw_mux = signals_out[10];
-assign b_l = signals_out[9];
-assign hlt_sig = signals_out[8]; 
-assign pcs = signals_out[7]; 		
-assign jump_register = signals_out[6];
-assign branch = signals_out[5];
-assign mem_read = signals_out[4];
-assign mem_to_reg = signals_out[3];
-assign mem_write = signals_out[2];
-assign alu_src = signals_out[1];
-assign reg_write = signals_out[0];
-
-// HAZARD DETECTION UNIT //TODO
+//Hazard Detection Unit
+//HDU(opcode, if_id_rs, if_id_rt, id_ex_rt, id_ex_mr, pc_write, if_id_write, stall);
 HDU hdu(
 	.opcode(IF_ID_Opcode),
 	.if_id_rs(IF_ID_Rs), 
 	.if_id_rt(IF_ID_Rt), 
 	.id_ex_rt(REG_ID_EX[ID_EX_Rd]), 
 	
-	.id_ex_mr(CTRL_ID_EX[MemRead]),
+	.id_ex_mr(CTRL_ID_EX[CONTROL_MEM_READ]),
 
 	.pc_write(pc_write), 
 	.if_id_write(if_id_write), 
 	.stall(stall)
-);
+);			
+						
+//Branch Control 
+//br_control(cond, flags, br_control, clk, branch);
+br_control br_controller(
+				.cond(IF_ID_Cond), 
+				.flags(IMM_ID_EX), 
+				.br_control(flags), 
+				.clk(clk), 
+				.branch(branch));						
+						
+//**Continuous Assignment**//						
 
-// FORWARDING UNIT //TODO
-FU forward_unit(
-	.id_ex_rt(REG_ID_EX[ID_EX_Rt]), 
-	.id_ex_rs(REG_ID_EX[ID_EX_Rs]), 
-	.ex_mem_rd(REG_EX_MEM_Rd), 
-	.mem_wb_rd(REG_MEM_WB_Rd), 
-	.ex_mem_rw(CTRL_EX_MEM[RegWrite]), 
-	.mem_wb_rw(CTRL_MEM_WB[RegWrite]), 
+assign pc_incr = pc + 2;	// PC Increment
+assign pc_branch = signals_out[BranchRegister] ?  TODO : DATA_IF_ID[IF_ID_PC] + IF_ID_Imm; 
+assign br_branch = ???TODO;  
 
-	.forwarda(forwardA), 
-	.forwardb(forwardB)
-);
+//Assign the data to be written back (Memory or AluResult)
+assign write_data = CTRL_MEM_WB[CONTROL_MEM_TO_REG] ? DATA_MEM_WB[MEM_WB_RD] :	DATA_MEM_WB[MEM_WB_RESULT];	
 
-// FORWARDING FOR ALU OP 1 //TODO
+//Forwarding ALU Op1
 assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :
 	      (forwardA == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
 	      (forwardA == SRC_MEM_WB) ? write_data : DATA_ID_EX[ID_EX_OP1];
 
-// FORWARDING FOR ALU OP 2 //TODO
+//Forwarding ALU Op2
 assign op_2 = (forwardB == SRC_ID_EX)  ? DATA_ID_EX_OP2 : 
 	      (forwardB == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
 	      (forwardB == SRC_MEM_WB) ? write_data : DATA_ID_EX_OP2;
 
-
+assign alu_src_data_rs = (pcs) ? pc : read_data1;
+assign alu_src_data = (alu_src) ? imm_off : read_data2;	//decision between reg val and imm
+assign flags_reg_input = (flags_update) ? flags_out : flags;
+		  
+		  
+//Other Assigns	  
+assign pc_write = (hlt_sig) ? 1'b0: 1'b1;   
+assign pc_branch = (jump_register) ? read_data1: pc_branch_temp;
+assign hlt = (pc_write) ? 1'b0 : 1'b1;
 	
-assign pc_incr        = pc + 1;	// INCREMENT PC
-assign jr_branch      = jr_forward ? result : read_1;				           
-assign pc_branch      = ctrl_signals[JR] ? jr_branch : DATA_IF_ID[IF_ID_PC] + IF_ID_Imm;	   // CALCULATED BRANCH ADDRESS
-assign write_data     = CTRL_MEM_WB[MemToReg] ? DATA_MEM_WB[MEM_WB_RD] : DATA_MEM_WB[MEM_WB_RSLT]; // WHAT DATA IS RETURNED FROM MEM STAGE
-//assign DATA_ID_EX_OP2 = CTRL_ID_EX[Jal] ? DATA_ID_EX[ID_EX_PC] : DATA_ID_EX[ID_EX_OP2];            // PASS THROUGH JAL ADDRESS IF JAL
-
+//Maybe used...?
+assign DATA_ID_EX_OP2 = CTRL_ID_EX[Jal] ? DATA_ID_EX[ID_EX_PC] : DATA_ID_EX[ID_EX_OP2];            // PASS THROUGH JAL ADDRESS IF JAL
 	
-//** PROGRAM COUNTER **//
+//**Program Counter**//
 always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
 		pc <= 16'h0000;
@@ -289,7 +263,7 @@ always @(posedge clk or negedge rst_n) begin
 	end
 end		  
 		  		  
-//** CONTROL PIPELINE **// //TODO
+//**Control Pipeline**// 
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
 		Ctrl_Id_Ex  <= 6'b000000;
@@ -312,7 +286,7 @@ always @(posedge clk or negedge rst_n) begin
 	end
 end
 
-//** DATA PIPELINE **// //TODO
+//**Data Pipeline**//
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
 		DATA_IF_ID[0] <= 16'h0000;
@@ -387,6 +361,5 @@ always @(posedge clk or negedge rst_n) begin
 		REG_MEM_WB_Rd		 <= REG_MEM_WB_Rd;
 	end
 end
-
 
 endmodule

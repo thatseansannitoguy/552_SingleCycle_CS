@@ -1,12 +1,13 @@
-module full_control(instr, signals_out, imm_dec);
+module full_control(instr, signals_out, imm_dec, rd, rs, rt, opcode, cond);
 
 input [15:0] instr;
 
 //all control signals and conditions and read signals
 output reg [11:0] signals_out;
 
-//register addr, and opcode present based off opcode
+//register addr, cond, and opcode present based off instruction
 output reg [3:0] rd, rs, rt, opcode;
+output reg [2:0] cond; 
 
 //immediate conditionally assinged based on instruction
 output reg [15:0] imm_dec;
@@ -25,7 +26,7 @@ output reg [15:0] imm_dec;
 //signals out designation
 //[8] HLT
 //[7] PCS
-//[6] Jump
+//[6] BranchRegister
 //[5] Branch
 //[4] MemRead
 //[3] MemToReg
@@ -57,20 +58,22 @@ localparam NO_SET_SIGNALS = 9'b000000000;
 localparam NO_SET_IMM = 16'h0000;
 localparam NO_SET_REG = 4'h0;
 
+wire [8:0] I, I_shift; 
 
 //begining of case assignment based on opcode
 always@(*) begin
 		opcode = instr(15:12]; //opcode assignment
+		cond = instr[11:9]; //condition assignment
 		case (opcode)
 				ADD: begin
 						if(instr != 16'h0000) begin	
-								signals_out[0] = ON; //RegWrite		
+								signals_out[0] = ON;  //RegWrite		
 								signals_out[1] = OFF; //ALUsrc
 								signals_out[2] = OFF; //MemWrite
 								signals_out[3] = OFF; //MemToReg
 								signals_out[4] = OFF; //MemRead
 								signals_out[5] = OFF; //Branch 
-								signals_out[6] = OFF; //Jump
+								signals_out[6] = OFF; //BranchRegister
 								signals_out[7] = OFF; //PCS cond
 								signals_out[8] = OFF; //Halt
 								
@@ -85,13 +88,13 @@ always@(*) begin
 							imm_dec = NO_SET_IMM;
 					end
 				SUB: begin	
-							signals_out[0] = ON; //RegWrite		
+							signals_out[0] = ON;  //RegWrite		
 							signals_out[1] = OFF; //ALUsrc
 							signals_out[2] = OFF; //MemWrite
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -107,13 +110,13 @@ always@(*) begin
 				
 					end
 				XOR: begin 
-							signals_out[0] = ON; //RegWrite		
+							signals_out[0] = ON;  //RegWrite		
 							signals_out[1] = OFF; //ALUsrc
 							signals_out[2] = OFF; //MemWrite
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -130,7 +133,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -147,7 +150,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -164,7 +167,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -181,7 +184,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -198,7 +201,7 @@ always@(*) begin
 							signals_out[3] = ON; //MemToReg
 							signals_out[4] = ON; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -215,7 +218,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -232,7 +235,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -249,7 +252,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -258,6 +261,7 @@ always@(*) begin
 							rt = NO_SET_REG;
 							
 							imm_dec = {{8{instr[7]}}, instr[7:0]};
+							
 					end
 				B: begin
 							signals_out[0] = OFF; //RegWrite		
@@ -266,7 +270,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = ON; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -274,7 +278,10 @@ always@(*) begin
 							rs = NO_SET_REG;
 							rt = NO_SET_REG;
 							
-							imm_dec = {{7{instr[7]}}, instr[8:0]}; //signed offset
+							I = instr[8:0]; 
+							I_shift = I << 1;
+							
+							imm_dec = {{7{I_shift[8]}}, I_shift[8:0]}; //signed offset
 				
 					end
 					BR: begin 
@@ -284,7 +291,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = ON; //Branch 
-							signals_out[6] = ON; //Jump
+							signals_out[6] = ON; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -302,7 +309,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = ON; //PCS cond
 							signals_out[8] = OFF; //Halt
 							
@@ -320,7 +327,7 @@ always@(*) begin
 							signals_out[3] = OFF; //MemToReg
 							signals_out[4] = OFF; //MemRead
 							signals_out[5] = OFF; //Branch 
-							signals_out[6] = OFF; //Jump
+							signals_out[6] = OFF; //BranchRegister
 							signals_out[7] = OFF; //PCS cond
 							signals_out[8] = ON; //Halt
 							
@@ -343,7 +350,7 @@ always@(*) begin
 			endcase
 	end
 			
-/*			
+/*	OLD IMPLEMENTATION		
 assign signals_out[11] = ((Opcode == ADD) ||
 				(Opcode == SUB) ||
 				(Opcode == XOR)	||	

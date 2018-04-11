@@ -1,4 +1,4 @@
-module FwardUnit(id_ex_rt, id_ex_rs, ex_mem_rd, mem_wb_rd, ex_mem_rw, mem_wb_rw, forwarda, forwardb);
+module FU(id_ex_rt, id_ex_rs, ex_mem_rd, mem_wb_rd, ex_mem_rw, mem_wb_rw, forwarda, forwardb);
 
 input [3:0] id_ex_rt, id_ex_rs, ex_mem_rd, mem_wb_rd;
 input ex_mem_rw, mem_wb_rw;
