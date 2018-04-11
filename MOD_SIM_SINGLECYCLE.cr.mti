@@ -1,9 +1,9 @@
-C:/shared/552_SingleCycle/552_SingleCycle/ALU.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/ALU.v
+C:/shared/552_SingleCycle/552_SingleCycle/forwarding_unit.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/forwarding_unit.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
--- Compiling module ALU
+-- Compiling module FwardUnit
 
 Top level modules:
-	ALU
+	FwardUnit
 
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/FlagsReg.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/FlagsReg.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
@@ -61,6 +61,13 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	memory1c
 
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/Branch_Control.v.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/Branch_Control.v.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module br_control
+
+Top level modules:
+	br_control
+
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/WriteDecoder_4_16.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/WriteDecoder_4_16.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module WriteDecoder_4_16
@@ -74,13 +81,6 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 
 Top level modules:
 	HDU
-
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/Branch_Control.v.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/Branch_Control.v.v
-Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
--- Compiling module br_control
-
-Top level modules:
-	br_control
 
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/full_control.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/full_control.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015

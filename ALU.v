@@ -21,7 +21,7 @@ output[2:0] Flags_out;
 
 
 // Internal Wires //
-wire[15:0] ADD_out, SUB_out, Shift_out, RED_out, PADDSB_out, LLB_out, LHB_out, LW_SW_out;
+wire[15:0] ADD_out, SUB_out, Shift_out, red_math, RED_out, PADDSB_out, LLB_out, LHB_out, LW_SW_out;
 wire Ovfl_add, Ovfl_sub; //just to show overflow/saturation
 
 // Param Definitions //

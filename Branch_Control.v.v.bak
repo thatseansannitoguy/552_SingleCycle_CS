@@ -9,17 +9,17 @@ output reg branch; //Essentially a boolean telling us to take or not take branch
 localparam NOT_TAKEN = 0;
 localparam TAKEN = 1; 
 
-always @(posedge clk) begin
+always @(*) begin
 
 	if(br_control) begin
-		branch = (C==3'b000 && F[0]==1'b0) ? TAKEN : 
-				(C==3'b001 && F[0]==1'b1) ? TAKEN : 
-				(C==3'b010 && F[0]==1'b0 && F[2]==1'b0) ? TAKEN : 
-				(C==3'b011 && F[2]==1'b1) ? TAKEN :
-				(C==3'b100 && (F[0]==1'b1 || (F[0]==1'b0 && F[2]==1'b0))) ? TAKEN :
-				(C==3'b101 && (F[0]==1'b1 || F[2]==1'b1)) ? TAKEN : 
-				(C==3'b110 && F[1]==1'b1) ? TAKEN :
-				(C==3'b111) ? TAKEN :
+		branch = (cond==3'b000 && flags[0]==1'b0) ? TAKEN : 
+				(cond==3'b001 && flags[0]==1'b1) ? TAKEN : 
+				(cond==3'b010 && flags[0]==1'b0 && flags[2]==1'b0) ? TAKEN : 
+				(cond==3'b011 && flags[2]==1'b1) ? TAKEN :
+				(cond==3'b100 && (flags[0]==1'b1 || (flags[0]==1'b0 && flags[2]==1'b0))) ? TAKEN :
+				(cond==3'b101 && (flags[0]==1'b1 || flags[2]==1'b1)) ? TAKEN : 
+				(cond==3'b110 && flags[1]==1'b1) ? TAKEN :
+				(cond==3'b111) ? TAKEN :
 				 NOT_TAKEN;
 	end else begin
 		branch = NOT_TAKEN;

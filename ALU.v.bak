@@ -1,4 +1,4 @@
-module ALU(ALU_Out, ALU_In1, ALU_In2, Opcode, Flags_out);
+module ALU(ALU_Out, ALU_In1, ALU_In2, imm, Opcode, Flags_out);
 
 //Opcode specifications
 //all with leading 0
@@ -12,9 +12,8 @@ module ALU(ALU_Out, ALU_In1, ALU_In2, Opcode, Flags_out);
 // PADDSB: 111
 
 // Inputs and Outputs //
-input[15:0] ALU_In1, ALU_In2;
+input[15:0] ALU_In1, ALU_In2, imm;
 input[3:0] Opcode;
-
 
 output[15:0] ALU_Out;
 
@@ -22,8 +21,8 @@ output[2:0] Flags_out;
 
 
 // Internal Wires //
-wire[15:0] ADD_out, SUB_out, Shift_out, RED_out, PADDSB_out, LLB_out, LHB_out, LW_SW_out;
-wire Ovfl; //just to show overflow/saturation
+wire[15:0] ADD_out, SUB_out, Shift_out, red_math, RED_out, PADDSB_out, LLB_out, LHB_out, LW_SW_out;
+wire Ovfl_add, Ovfl_sub; //just to show overflow/saturation
 
 // Param Definitions //
 localparam ADD	= 4'b0000;
@@ -46,18 +45,19 @@ localparam HLT 	= 4'b1111;
 // Assignments // 
 wire dont_care, dont_care2; //overflow outputs we dont care about
 
-CLA_add_16 adder(.Sum(ADD_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2));
-CLA_sub_16 subber(.Sum(SUB_out), .Ovfl(Ovfl), .A(ALU_In1), .B(ALU_In2), .sub(1'b1));
+CLA_add_16 adder(.Sum(ADD_out), .Ovfl(Ovfl_add), .A(ALU_In1), .B(ALU_In2));
+CLA_sub_16 subber(.Sum(SUB_out), .Ovfl(Ovfl_sub), .A(ALU_In1), .B(ALU_In2), .sub(1'b1));
 
 //modifies opcode to fit our shifter within shifter
-Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(ALU_In2[3:0]), .Mode_In(Opcode[1:0]));
+Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(imm[3:0]), .Mode_In(Opcode[1:0]));
   
 PSA_16bit paddsub_ops(.Sum(PADDSB_out), .Error(dont_care2), .A(ALU_In1), .B(ALU_In2));
 
-assign LLB_out = (ALU_In1 & 16'hFF00) | {8'h00, {ALU_In2[7:0]}};
-assign LHB_out = (ALU_In1 & 16'h00FF) | (ALU_In2[7:0] << 8);
+assign LHB_out = (ALU_In1 & 16'h00FF) | (imm[7:0] << 8);
+assign LLB_out = (ALU_In1 & 16'hFF00) | {8'h00, {imm[7:0]}};
+assign red_math = (ALU_In1[15:12] + ALU_In2[15:12]) + 
 
-CLA_add_16 sw_lw_add(.Sum(LW_SW_out), .Ovfl(dont_care), .A(ALU_In1 & 16'hFFFE), .B(ALU_In2 << 1));
+CLA_add_16 sw_lw_add(.Sum(LW_SW_out), .Ovfl(dont_care), .A(ALU_In1 & 16'hFFFE), .B(imm << 1));
 
 assign ALU_Out =
 	((Opcode == ADD) || (Opcode == PCS)) ? ADD_out : 
@@ -77,9 +77,9 @@ assign ALU_Out =
 assign Flags_out[2] = (((Opcode != PADDSB) || (Opcode != RED)) && ALU_Out[15] == 1'b1) ? 1'b1 :
 					  1'b0;
 
-assign Flags_out[1] = (Opcode == ADD && Ovfl) ? 1'b1 :
-					  (Opcode == SUB && Ovfl) ? 1'b1 :
-					  1'b0;;
+assign Flags_out[1] = (Opcode == ADD && Ovfl_add) ? 1'b1 :
+					  (Opcode == SUB && Ovfl_sub) ? 1'b1 :
+					  1'b0;
 
 assign Flags_out[0] = (Opcode == ADD && ALU_Out == 16'h0000) ? 1'b1 :
 					  (Opcode == SUB && ALU_Out == 16'h0000) ? 1'b1 :
