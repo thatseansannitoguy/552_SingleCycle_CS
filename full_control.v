@@ -60,6 +60,7 @@ localparam NO_SET_REG = 4'h0;
 
 wire [8:0] I, I_shift; 
 
+
 //begining of case assignment based on opcode
 always@(*) begin
 		opcode = instr(15:12]; //opcode assignment
@@ -260,7 +261,7 @@ always@(*) begin
 							rs = NO_SET_REG;
 							rt = NO_SET_REG;
 							
-							imm_dec = {{8{instr[7]}}, instr[7:0]};
+							imm_dec = {8'h00, instr[7:0]};
 							
 					end
 				B: begin

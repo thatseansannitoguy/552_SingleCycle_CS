@@ -1,4 +1,4 @@
-module ALU(ALU_Out, ALU_In1, ALU_In2, Opcode, Flags_out);
+module ALU(ALU_Out, ALU_In1, ALU_In2, imm, Opcode, Flags_out);
 
 //Opcode specifications
 //all with leading 0
@@ -12,7 +12,7 @@ module ALU(ALU_Out, ALU_In1, ALU_In2, Opcode, Flags_out);
 // PADDSB: 111
 
 // Inputs and Outputs //
-input[15:0] ALU_In1, ALU_In2;
+input[15:0] ALU_In1, ALU_In2, imm;
 input[3:0] Opcode;
 
 output[15:0] ALU_Out;
@@ -49,14 +49,14 @@ CLA_add_16 adder(.Sum(ADD_out), .Ovfl(Ovfl_add), .A(ALU_In1), .B(ALU_In2));
 CLA_sub_16 subber(.Sum(SUB_out), .Ovfl(Ovfl_sub), .A(ALU_In1), .B(ALU_In2), .sub(1'b1));
 
 //modifies opcode to fit our shifter within shifter
-Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(ALU_In2[3:0]), .Mode_In(Opcode[1:0]));
+Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(imm[3:0]), .Mode_In(Opcode[1:0]));
   
 PSA_16bit paddsub_ops(.Sum(PADDSB_out), .Error(dont_care2), .A(ALU_In1), .B(ALU_In2));
 
-assign LLB_out = (ALU_In1 & 16'hFF00) | {8'h00, {ALU_In2[7:0]}};
-assign LHB_out = (ALU_In1 & 16'h00FF) | (ALU_In2[7:0] << 8);
+assign LHB_out = (ALU_In1 & 16'h00FF) | (imm[7:0] << 8);
+assign LLB_out = (ALU_In1 & 16'hFF00) | {8'h00, {imm[7:0]}};
 
-CLA_add_16 sw_lw_add(.Sum(LW_SW_out), .Ovfl(dont_care), .A(ALU_In1 & 16'hFFFE), .B(ALU_In2 << 1));
+CLA_add_16 sw_lw_add(.Sum(LW_SW_out), .Ovfl(dont_care), .A(ALU_In1 & 16'hFFFE), .B(imm << 1));
 
 assign ALU_Out =
 	((Opcode == ADD) || (Opcode == PCS)) ? ADD_out : 
