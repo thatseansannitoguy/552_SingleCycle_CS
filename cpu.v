@@ -109,14 +109,12 @@ wire [3:0] IF_ID_Rd, 		//To hold initial decode values
 	   IF_ID_Opcode;					
 wire [2:0] IF_ID_Cond; 		//conditional operation
 
-wire if_id_write;			//Hazard Unit Driven, tells when to pull instruction enable
+wire IF_ID_WriteInstr;			//Hazard Unit Driven, tells when to pull instruction enable
 wire stall; 				//Hazard Unit Driven, tells when to stall with NOPs
 wire pc_write; 				//Hazard Unit Driven, tells when to write/ not write to pc
 wire branch; 				//Branch unit driven, tells when a branch is taken or not
 
-//
 wire [1:0] forwardA, forwardB;
-//wire pc_write, if_id_write, stall, mem_ready, branch, jal, jr_forward;
 
 //** MODULES ** //
 
@@ -126,7 +124,7 @@ memory1c I_mem(
 							.data_out(instr),
 							.data_in(16'h0000), 
 							.addr(pc), 
-							.enable(if_id_write), 
+							.enable(IF_ID_WriteInstr), 
 							.wr(1'b0), 
 							.clk(clk), 
 							.rst(~rst_n));
@@ -192,17 +190,17 @@ FwardUnit forward_unit(
 );
 			
 //Hazard Detection Unit
-//HDU(opcode, if_id_rs, if_id_rt, id_ex_rt, id_ex_mr, pc_write, if_id_write, stall);
+//HDU(IF_ID_Opcode, IF_ID_Rs, IF_ID_Rt, ID_EX_Rt, ID_EX_MemRead, pc_write, IF_ID_WriteInstr, stall);
 HDU hdu(
-	.opcode(IF_ID_Opcode),
-	.if_id_rs(IF_ID_Rs), 
-	.if_id_rt(IF_ID_Rt), 
-	.id_ex_rt(REG_ID_EX[ID_EX_Rd]), 
+	.IF_ID_Opcode(IF_ID_Opcode),
+	.IF_ID_Rs(IF_ID_Rs), 
+	.IF_ID_Rt(IF_ID_Rt), 
+	.ID_EX_Rt(REG_ID_EX[ID_EX_Rd]), 
 	
-	.id_ex_mr(CTRL_ID_EX[CONTROL_MEM_READ]),
+	.ID_EX_MemRead(CTRL_ID_EX[CONTROL_MEM_READ]),
 
 	.pc_write(pc_write), 
-	.if_id_write(if_id_write), 
+	.IF_ID_WriteInstr(IF_ID_WriteInstr), 
 	.stall(stall)
 );			
 						
@@ -291,7 +289,7 @@ always @(posedge clk or negedge rst_n) begin
 		if (branch) begin
 			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
 			DATA_IF_ID[IF_ID_INST] <= 16'h0000;
-		end else if (if_id_write) begin
+		end else if (IF_ID_WriteInstr) begin
 			DATA_IF_ID[IF_ID_PC]   <= pc_incr;
 			DATA_IF_ID[IF_ID_INST] <= instr;
 		end else begin
