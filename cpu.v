@@ -7,13 +7,13 @@ module cpu(clk, rst_n, hlt, pc);
 input clk, rst_n; //system clock and active LOW reset, causes execution to start at 0x0000
 
 //Outputs
-output hlt; //will be asserted when HLT instruction is encountered
-output [15:0] pc; //pc value over program execution 
+output reg hlt; //will be asserted when HLT instruction is encountered
+output reg [15:0] pc; //pc value over program execution 
 
 //**Global Variables**//
 
 //Flag Indexes
-localparam Z = 0;	//Zero 
+localparam N = 0;	//Negative 
 localparam V = 1; 	//Overflow 
 localparam Z = 2;	//Zero 
 
@@ -85,20 +85,20 @@ reg [2:0]  FLAGS;			//Stores Flags Set in ALU
 //**Wires**//
 
 //Internal Wires
-wire [15:0] instr, //instruction 
+wire [15:0] instr, //instruction
+			br_branch,  //holds br address 
 			read_data1, //to alu
 			read_data2, //to alu_mux and to d-mem write data
 			alu_result,	//to D-mem and D-mem mux
 			mem_read_data,  //data read in D-mem to post D-mem mux
 			write_data, //from D-mem mux
-			alu_src_data, //from reg to alu mux
-			alu_src_data_rs,
 			imm_off, //SW, LW, LHB LLB
-			pc_branch,
-			pc_branch_temp,  
+			pc_branch,  
 			pc_incr, //store calculated pc increment
-			pc_descion,
-			IF_ID_Imm;
+			IF_ID_Imm,
+			op_1,
+			op_2,
+			DATA_ID_EX_OP2;
 
 wire [11:0] signals_out; 	//Signal control wires	
 wire [2:0]  flags_out;		//control flags = 3'b N, V, Z
@@ -210,7 +210,7 @@ HDU hdu(
 //br_control(cond, flags, br_control, clk, branch);
 br_control br_controller(
 				.cond(IF_ID_Cond), 
-				.flags(flag_out), 
+				.flags(flags_out), 
 				.br_control(signals_out[Branch]), 
 				.clk(clk), 
 				.branch(branch));						
@@ -219,8 +219,8 @@ br_control br_controller(
 
 assign pc_incr = pc + 2;	// PC Increment
 assign pc_branch = signals_out[BranchRegister] ?  br_branch : DATA_IF_ID[IF_ID_PC] + IF_ID_Imm; 
-assign br_branch = read_1;  //TODO maybe implement forwarding on where register value comes from
-assign write_data = CTRL_MEM_WB[CONTROL_MEM_TO_REG] ? DATA_MEM_WB[MEM_WB_RD] :	DATA_MEM_WB[MEM_WB_RESULT];  //Assign the data to be written back (Memory or AluResult)	
+assign br_branch = read_data1;  //TODO maybe implement forwarding on where register value comes from
+assign write_data = CTRL_MEM_WB[CONTROL_MEM_TO_REG] ? DATA_MEM_WB[MEM_WB_DATA] :	DATA_MEM_WB[MEM_WB_RESULT];  //Assign the data to be written back (Memory or AluResult)	
 assign DATA_ID_EX_OP2 = CTRL_ID_EX[CONTROL_PCS] ? DATA_ID_EX[ID_EX_PC] : DATA_ID_EX[ID_EX_OP2]; //TODO may need a +2 on Data PC retrieved
 
 //Forwarding ALU Op1
@@ -230,7 +230,7 @@ assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :
 
 //Forwarding ALU Op2
 assign op_2 = (forwardB == SRC_ID_EX)  ? DATA_ID_EX_OP2 : 
-	      (forwardB == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
+	      (forwardB == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RESULT] :
 	      (forwardB == SRC_MEM_WB) ? write_data : DATA_ID_EX_OP2;
 		
 //**Program Counter**//
@@ -247,19 +247,19 @@ end
 //**Control Pipeline**// 
 always @(posedge clk or negedge rst_n) begin
 	if (~rst_n) begin
-		Ctrl_Id_Ex  <= 6'b000000;
-		Ctrl_Ex_Mem <= 5'b00000;
-		Ctrl_Mem_Wb <= 3'b000;
+		CTRL_ID_EX  <= 6'b000000;
+		CTRL_EX_MEM <= 5'b00000;
+		CTRL_MEM_WB <= 3'b000;
 
 		hlt	    <= 1'b0;
 	end else begin
 		// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = PCS
-		CTRL_ID_EX  <= (stall & ~signals_out[Halt]) ? 6'b000000 : {signals_out[PCS], signals_out[MemRead], signal_out[MemWrite], 
-																   signals_out[MemToReg], signals_out[RegWrite], signal_out[Halt]};
+		CTRL_ID_EX  <= (stall & ~signals_out[Halt]) ? 6'b000000 : {signals_out[PCS], signals_out[MemRead], signals_out[MemWrite], 
+				signals_out[MemToReg], signals_out[RegWrite], signals_out[Halt]};
 		CTRL_EX_MEM <= CTRL_ID_EX[4:0];
 		CTRL_MEM_WB <= CTRL_EX_MEM[2:0];
 
-		hlt 	    <= CTRL_EX_MEM[Halt];
+		hlt 	    <= CTRL_EX_MEM[0];
 	end
 end
 
@@ -299,8 +299,8 @@ always @(posedge clk or negedge rst_n) begin
 			DATA_IF_ID[IF_ID_INST] <= DATA_IF_ID[IF_ID_INST];
 		end
 
-		DATA_ID_EX[ID_EX_OP1]    <= read_1;
-		DATA_ID_EX[ID_EX_OP2]    <= read_2;
+		DATA_ID_EX[ID_EX_OP1]    <= read_data1;
+		DATA_ID_EX[ID_EX_OP2]    <= read_data2;
 		DATA_ID_EX[ID_EX_PC]     <= DATA_IF_ID[IF_ID_PC];
 		REG_ID_EX[ID_EX_Rd]	 <= IF_ID_Rd;
 		REG_ID_EX[ID_EX_Rs]	 <= IF_ID_Rs;

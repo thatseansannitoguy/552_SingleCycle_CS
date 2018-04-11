@@ -30,7 +30,7 @@ Register R3(.clk(clk), .rst(rst), .D(DstData), .WriteReg(dec_dst_reg[2]), .ReadE
 Register R2(.clk(clk), .rst(rst), .D(DstData), .WriteReg(dec_dst_reg[1]), .ReadEnable1(dec_src_reg1[1]), .ReadEnable2(dec_src_reg2[1]), .Bitline1(temp1), .Bitline2(temp2));
 Register R1(.clk(clk), .rst(rst), .D(DstData), .WriteReg(dec_dst_reg[0]), .ReadEnable1(dec_src_reg1[0]), .ReadEnable2(dec_src_reg2[0]), .Bitline1(temp1), .Bitline2(temp2));
 
-assign SrcData1 = ((SrcReg1 == DstReg) && (WriteReg)) ? DstData: temp1; //Forwarding From WB
-assign SrcData2 = ((SrcReg2 == DstReg) && (WriteReg)) ? DstData: temp2; //Forwarding From WB
+assign SrcData1 = temp1; //(SrcReg1 == DstReg) ? DstData : 
+assign SrcData2 = temp2; //(SrcReg2 == DstReg) ? DstData : 
 
 endmodule

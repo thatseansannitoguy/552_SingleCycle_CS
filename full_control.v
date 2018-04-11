@@ -58,12 +58,11 @@ localparam NO_SET_SIGNALS = 9'b000000000;
 localparam NO_SET_IMM = 16'h0000;
 localparam NO_SET_REG = 4'h0;
 
-wire [8:0] I, I_shift; 
-
+reg [8:0] I, I_shift; 
 
 //begining of case assignment based on opcode
 always@(*) begin
-		opcode = instr(15:12]; //opcode assignment
+		opcode = instr[15:12]; //opcode assignment
 		cond = instr[11:9]; //condition assignment
 		case (opcode)
 				ADD: begin
@@ -321,7 +320,7 @@ always@(*) begin
 							imm_dec = NO_SET_IMM;
 					
 					end
-					HALT: begin
+					HLT: begin
 							signals_out[0] = OFF; //RegWrite		
 							signals_out[1] = OFF; //ALUsrc
 							signals_out[2] = OFF; //MemWrite
@@ -350,7 +349,8 @@ always@(*) begin
 					end
 			endcase
 	end
-			
+endmodule
+	
 /*	OLD IMPLEMENTATION		
 assign signals_out[11] = ((Opcode == ADD) ||
 				(Opcode == SUB) ||
@@ -398,4 +398,3 @@ assign imm_dec = ( 		(Opcode == LLB)	|| (Opcode == LHB) ) ?
 				 	{{12{instr[3]}}, instr[3:0]}; //ROR, SLL, SRA, LW, SW
 */
 			
-endmodule
