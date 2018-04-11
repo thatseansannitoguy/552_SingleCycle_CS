@@ -57,9 +57,9 @@ localparam ID_EX_Rs    = 1;			//Rs Index
 localparam ID_EX_Rt    = 2;			//Rt Index
 
 //TODO
-//localparam SRC_ID_EX  = 2'b00;
-//localparam SRC_EX_MEM = 2'b10;
-//localparam SRC_MEM_WB = 2'b01;
+localparam SRC_ID_EX  = 2'b00;
+localparam SRC_EX_MEM = 2'b10;
+localparam SRC_MEM_WB = 2'b01;
 
 //**Registers**//
 
@@ -70,7 +70,7 @@ reg [15:0] DATA_EX_MEM [1:0]; 	// [0] = ALU_Result, [1] = Op2_Src
 reg [15:0] DATA_MEM_WB [1:0]; 	// [0] = Mem_Data_Read, [1] = ALU_Result
 
 //Control Pipeline Registers//
-reg [5:0] CTRL_ID_EX; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = JumpRegister //TODO
+reg [5:0] CTRL_ID_EX; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = PCS
 reg [4:0] CTRL_EX_MEM; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead
 reg [2:0] CTRL_MEM_WB; 	// [0] = Halt, [1] = RegWrite, [2] = MemToReg
 
@@ -114,8 +114,8 @@ wire stall; 				//Hazard Unit Driven, tells when to stall with NOPs
 wire pc_write; 				//Hazard Unit Driven, tells when to write/ not write to pc
 wire branch; 				//Branch unit driven, tells when a branch is taken or not
 
-//TODO
-//wire [1:0] read_signals, forwardA, forwardB;
+//
+wire [1:0] forwardA, forwardB;
 //wire pc_write, if_id_write, stall, mem_ready, branch, jal, jr_forward;
 
 //** MODULES ** //
@@ -219,22 +219,19 @@ br_control br_controller(
 
 assign pc_incr = pc + 2;	// PC Increment
 assign pc_branch = signals_out[BranchRegister] ?  br_branch : DATA_IF_ID[IF_ID_PC] + IF_ID_Imm; 
-assign br_branch = read1;  //TODO
-
-//Assign the data to be written back (Memory or AluResult)
-assign write_data = CTRL_MEM_WB[CONTROL_MEM_TO_REG] ? DATA_MEM_WB[MEM_WB_RD] :	DATA_MEM_WB[MEM_WB_RESULT];	
+assign br_branch = read_1;  //TODO maybe implement forwarding on where register value comes from
+assign write_data = CTRL_MEM_WB[CONTROL_MEM_TO_REG] ? DATA_MEM_WB[MEM_WB_RD] :	DATA_MEM_WB[MEM_WB_RESULT];  //Assign the data to be written back (Memory or AluResult)	
+assign DATA_ID_EX_OP2 = CTRL_ID_EX[CONTROL_PCS] ? DATA_ID_EX[ID_EX_PC] : DATA_ID_EX[ID_EX_OP2]; //TODO may need a +2 on Data PC retrieved
 
 //Forwarding ALU Op1
 assign op_1 = (forwardA == SRC_ID_EX)  ? DATA_ID_EX[ID_EX_OP1] :
-	      (forwardA == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
+	      (forwardA == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RESULT] :
 	      (forwardA == SRC_MEM_WB) ? write_data : DATA_ID_EX[ID_EX_OP1];
 
 //Forwarding ALU Op2
 assign op_2 = (forwardB == SRC_ID_EX)  ? DATA_ID_EX_OP2 : 
 	      (forwardB == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
 	      (forwardB == SRC_MEM_WB) ? write_data : DATA_ID_EX_OP2;
-
-assign alu_src_data_rs = pcs ? DATA_ID_EX[ID_EX_PC] : read_data1;
 		
 //**Program Counter**//
 always @(posedge clk or negedge rst_n) begin 
