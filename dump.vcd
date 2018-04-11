@@ -1,5 +1,5 @@
 $date
-	Wed Apr 11 13:13:15 2018
+	Wed Apr 11 15:06:44 2018
 $end
 $version
 	ModelSim Version 10.4d
@@ -342,38 +342,38 @@ $var wire 1 N# IF_ID_Imm [3] $end
 $var wire 1 O# IF_ID_Imm [2] $end
 $var wire 1 P# IF_ID_Imm [1] $end
 $var wire 1 Q# IF_ID_Imm [0] $end
-$var wire 1 R# op_1 [15] $end
-$var wire 1 S# op_1 [14] $end
-$var wire 1 T# op_1 [13] $end
-$var wire 1 U# op_1 [12] $end
-$var wire 1 V# op_1 [11] $end
-$var wire 1 W# op_1 [10] $end
-$var wire 1 X# op_1 [9] $end
-$var wire 1 Y# op_1 [8] $end
-$var wire 1 Z# op_1 [7] $end
-$var wire 1 [# op_1 [6] $end
-$var wire 1 \# op_1 [5] $end
-$var wire 1 ]# op_1 [4] $end
-$var wire 1 ^# op_1 [3] $end
-$var wire 1 _# op_1 [2] $end
-$var wire 1 `# op_1 [1] $end
-$var wire 1 a# op_1 [0] $end
-$var wire 1 b# op_2 [15] $end
-$var wire 1 c# op_2 [14] $end
-$var wire 1 d# op_2 [13] $end
-$var wire 1 e# op_2 [12] $end
-$var wire 1 f# op_2 [11] $end
-$var wire 1 g# op_2 [10] $end
-$var wire 1 h# op_2 [9] $end
-$var wire 1 i# op_2 [8] $end
-$var wire 1 j# op_2 [7] $end
-$var wire 1 k# op_2 [6] $end
-$var wire 1 l# op_2 [5] $end
-$var wire 1 m# op_2 [4] $end
-$var wire 1 n# op_2 [3] $end
-$var wire 1 o# op_2 [2] $end
-$var wire 1 p# op_2 [1] $end
-$var wire 1 q# op_2 [0] $end
+$var wire 1 R# src1 [15] $end
+$var wire 1 S# src1 [14] $end
+$var wire 1 T# src1 [13] $end
+$var wire 1 U# src1 [12] $end
+$var wire 1 V# src1 [11] $end
+$var wire 1 W# src1 [10] $end
+$var wire 1 X# src1 [9] $end
+$var wire 1 Y# src1 [8] $end
+$var wire 1 Z# src1 [7] $end
+$var wire 1 [# src1 [6] $end
+$var wire 1 \# src1 [5] $end
+$var wire 1 ]# src1 [4] $end
+$var wire 1 ^# src1 [3] $end
+$var wire 1 _# src1 [2] $end
+$var wire 1 `# src1 [1] $end
+$var wire 1 a# src1 [0] $end
+$var wire 1 b# src2 [15] $end
+$var wire 1 c# src2 [14] $end
+$var wire 1 d# src2 [13] $end
+$var wire 1 e# src2 [12] $end
+$var wire 1 f# src2 [11] $end
+$var wire 1 g# src2 [10] $end
+$var wire 1 h# src2 [9] $end
+$var wire 1 i# src2 [8] $end
+$var wire 1 j# src2 [7] $end
+$var wire 1 k# src2 [6] $end
+$var wire 1 l# src2 [5] $end
+$var wire 1 m# src2 [4] $end
+$var wire 1 n# src2 [3] $end
+$var wire 1 o# src2 [2] $end
+$var wire 1 p# src2 [1] $end
+$var wire 1 q# src2 [0] $end
 $var wire 1 r# DATA_ID_EX_OP2 [15] $end
 $var wire 1 s# DATA_ID_EX_OP2 [14] $end
 $var wire 1 t# DATA_ID_EX_OP2 [13] $end
@@ -424,14 +424,14 @@ $var wire 1 B$ IF_ID_Opcode [0] $end
 $var wire 1 C$ IF_ID_Cond [2] $end
 $var wire 1 D$ IF_ID_Cond [1] $end
 $var wire 1 E$ IF_ID_Cond [0] $end
-$var wire 1 F$ if_id_write $end
+$var wire 1 F$ IF_ID_WriteInstr $end
 $var wire 1 G$ stall $end
 $var wire 1 H$ pc_write $end
 $var wire 1 I$ branch $end
-$var wire 1 J$ forwardA [1] $end
-$var wire 1 K$ forwardA [0] $end
-$var wire 1 L$ forwardB [1] $end
-$var wire 1 M$ forwardB [0] $end
+$var wire 1 J$ forward_src1 [1] $end
+$var wire 1 K$ forward_src1 [0] $end
+$var wire 1 L$ forward_src2 [1] $end
+$var wire 1 M$ forward_src2 [0] $end
 
 $scope module I_mem $end
 $var parameter 32 N$ ADDR_WIDTH $end
@@ -8918,61 +8918,59 @@ $upscope $end
 $upscope $end
 
 $scope module forward_unit $end
-$var parameter 2 ~0 NO_HAZARD $end
-$var parameter 2 !1 EX_HAZARD $end
-$var parameter 2 "1 MEM_HAZARD $end
-$var wire 1 #1 id_ex_rt [3] $end
-$var wire 1 $1 id_ex_rt [2] $end
-$var wire 1 %1 id_ex_rt [1] $end
-$var wire 1 &1 id_ex_rt [0] $end
-$var wire 1 '1 id_ex_rs [3] $end
-$var wire 1 (1 id_ex_rs [2] $end
-$var wire 1 )1 id_ex_rs [1] $end
-$var wire 1 *1 id_ex_rs [0] $end
-$var wire 1 +1 ex_mem_rd [3] $end
-$var wire 1 ,1 ex_mem_rd [2] $end
-$var wire 1 -1 ex_mem_rd [1] $end
-$var wire 1 .1 ex_mem_rd [0] $end
-$var wire 1 /1 mem_wb_rd [3] $end
-$var wire 1 01 mem_wb_rd [2] $end
-$var wire 1 11 mem_wb_rd [1] $end
-$var wire 1 21 mem_wb_rd [0] $end
-$var wire 1 31 ex_mem_rw $end
-$var wire 1 41 mem_wb_rw $end
-$var reg 2 51 forwarda [1:0] $end
-$var reg 2 61 forwardb [1:0] $end
+$var parameter 2 ~0 EX_HAZARD $end
+$var parameter 2 !1 MEM_HAZARD $end
+$var parameter 2 "1 NO_HAZARD $end
+$var wire 1 #1 ID_EX_Rt [3] $end
+$var wire 1 $1 ID_EX_Rt [2] $end
+$var wire 1 %1 ID_EX_Rt [1] $end
+$var wire 1 &1 ID_EX_Rt [0] $end
+$var wire 1 '1 ID_EX_Rs [3] $end
+$var wire 1 (1 ID_EX_Rs [2] $end
+$var wire 1 )1 ID_EX_Rs [1] $end
+$var wire 1 *1 ID_EX_Rs [0] $end
+$var wire 1 +1 EX_MEM_Rd [3] $end
+$var wire 1 ,1 EX_MEM_Rd [2] $end
+$var wire 1 -1 EX_MEM_Rd [1] $end
+$var wire 1 .1 EX_MEM_Rd [0] $end
+$var wire 1 /1 MEM_WB_Rd [3] $end
+$var wire 1 01 MEM_WB_Rd [2] $end
+$var wire 1 11 MEM_WB_Rd [1] $end
+$var wire 1 21 MEM_WB_Rd [0] $end
+$var wire 1 31 EX_MEM_RegWrite $end
+$var wire 1 41 MEM_WB_RegWrite $end
+$var reg 2 51 forward_src1 [1:0] $end
+$var reg 2 61 forward_src2 [1:0] $end
 $upscope $end
 
 $scope module hdu $end
-$var parameter 1 71 DETECTED $end
-$var parameter 1 81 NOT_DETECTED $end
-$var parameter 4 91 HLT $end
-$var wire 1 ?$ opcode [3] $end
-$var wire 1 @$ opcode [2] $end
-$var wire 1 A$ opcode [1] $end
-$var wire 1 B$ opcode [0] $end
-$var wire 1 7$ if_id_rs [3] $end
-$var wire 1 8$ if_id_rs [2] $end
-$var wire 1 9$ if_id_rs [1] $end
-$var wire 1 :$ if_id_rs [0] $end
-$var wire 1 ;$ if_id_rt [3] $end
-$var wire 1 <$ if_id_rt [2] $end
-$var wire 1 =$ if_id_rt [1] $end
-$var wire 1 >$ if_id_rt [0] $end
-$var wire 1 :1 id_ex_rt [3] $end
-$var wire 1 ;1 id_ex_rt [2] $end
-$var wire 1 <1 id_ex_rt [1] $end
-$var wire 1 =1 id_ex_rt [0] $end
-$var wire 1 >1 id_ex_mr $end
-$var wire 1 H$ pc_write $end
-$var wire 1 F$ if_id_write $end
-$var wire 1 G$ stall $end
-$var reg 1 ?1 detected $end
+$var parameter 1 71 ON $end
+$var parameter 1 81 OFF $end
+$var wire 1 ?$ IF_ID_Opcode [3] $end
+$var wire 1 @$ IF_ID_Opcode [2] $end
+$var wire 1 A$ IF_ID_Opcode [1] $end
+$var wire 1 B$ IF_ID_Opcode [0] $end
+$var wire 1 7$ IF_ID_Rs [3] $end
+$var wire 1 8$ IF_ID_Rs [2] $end
+$var wire 1 9$ IF_ID_Rs [1] $end
+$var wire 1 :$ IF_ID_Rs [0] $end
+$var wire 1 ;$ IF_ID_Rt [3] $end
+$var wire 1 <$ IF_ID_Rt [2] $end
+$var wire 1 =$ IF_ID_Rt [1] $end
+$var wire 1 >$ IF_ID_Rt [0] $end
+$var wire 1 91 ID_EX_Rt [3] $end
+$var wire 1 :1 ID_EX_Rt [2] $end
+$var wire 1 ;1 ID_EX_Rt [1] $end
+$var wire 1 <1 ID_EX_Rt [0] $end
+$var wire 1 =1 ID_EX_MemRead $end
+$var reg 1 >1 pc_write $end
+$var reg 1 ?1 IF_ID_WriteInstr $end
+$var reg 1 @1 stall $end
 $upscope $end
 
 $scope module br_controller $end
-$var parameter 32 @1 NOT_TAKEN $end
-$var parameter 32 A1 TAKEN $end
+$var parameter 32 A1 NOT_TAKEN $end
+$var parameter 32 B1 TAKEN $end
 $var wire 1 C$ cond [2] $end
 $var wire 1 D$ cond [1] $end
 $var wire 1 E$ cond [0] $end
@@ -8981,7 +8979,7 @@ $var wire 1 1$ flags [1] $end
 $var wire 1 2$ flags [0] $end
 $var wire 1 *$ br_control $end
 $var wire 1 R! clk $end
-$var reg 1 B1 branch $end
+$var reg 1 C1 branch $end
 $upscope $end
 $upscope $end
 $upscope $end
@@ -9076,8 +9074,10 @@ b0 ]!
 0b'
 b0 51
 b0 61
-0?1
-0B1
+1>1
+1?1
+0@1
+0C1
 0d'
 0f'
 0h'
@@ -9343,14 +9343,13 @@ b1100 7,
 b1101 8,
 b1110 9,
 b1111 :,
-b0 ~0
-b10 !1
-b1 "1
+b10 ~0
+b1 !1
+b0 "1
 b1 71
 b0 81
-b1111 91
-b0 @1
-b1 A1
+b0 A1
+b1 B1
 b0 +!
 b1 ,!
 b10 -!
@@ -10400,11 +10399,11 @@ z!-
 0m0
 0S!
 1R!
-0>1
 0=1
 0<1
 0;1
 0:1
+091
 041
 031
 021
@@ -10777,7 +10776,7 @@ b1010001 Y!
 08
 17
 14
-1=1
+1<1
 0s+
 b1010 &,
 b1 $,
@@ -11093,8 +11092,8 @@ b1 [!
 1A"
 141
 121
-0=1
-1<1
+0<1
+1;1
 0*1
 0{+
 0z+
@@ -11453,7 +11452,7 @@ b10 [!
 03
 021
 111
-1=1
+1<1
 0)1
 0}+
 0s+
@@ -11811,8 +11810,8 @@ b11 [!
 0M"
 1L"
 121
-0=1
 0<1
+0;1
 0*1
 1&1
 1!,
@@ -12177,8 +12176,8 @@ b0 Z!
 031
 0.1
 0-1
-1=1
-1;1
+1<1
+1:1
 1%1
 0!,
 0~+
@@ -12393,14 +12392,14 @@ b0 [!
 0K"
 0J"
 0H"
-1>1
+1=1
 131
 041
 021
 011
 1.1
 1,1
-0=1
+0<1
 1*1
 0)1
 1(1
@@ -12440,7 +12439,9 @@ b10 %,
 1;"
 1:"
 18"
-1?1
+0>1
+0?1
+1@1
 0H$
 0F$
 1G$
@@ -12650,15 +12651,17 @@ b101 [!
 0;-
 0K"
 0J"
-0>1
+0=1
 141
 121
 101
 0.1
-1=1
+1<1
 0*1
 1%1
-0?1
+1>1
+1?1
+0@1
 1H$
 1F$
 0G$
@@ -13388,7 +13391,9 @@ b0 %,
 0u!
 0q!
 0o!
-1?1
+0>1
+0?1
+1@1
 0H$
 0F$
 1G$
@@ -13476,9 +13481,4 @@ b0 51
 1X.
 1E/
 1i.
-140
-1G/
-1y.
-0{.
-0&0
-1*0
+1
