@@ -43,13 +43,13 @@ localparam MEM_WB_DATA = 0; 		//Retrieved Data from Mem
 localparam MEM_WB_RESULT = 1;		//Write Back Result
 
 //Control Pipeline Indexes
-// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = JumpRegister
+// [0] = Halt, [1] = RegWrite, [2] = MemToReg, [3] = MemWrite , [4] = MemRead, [5] = PCS
 localparam CONTROL_HALT = 0; 
 localparam CONTROL_REG_WRITE = 1; 
 localparam CONTROL_MEM_TO_REG = 2; 
 localparam CONTROL_MEM_WRITE = 3; 
 localparam CONTROL_MEM_READ = 4; 
-localparam CONTROL_JUMP_REG = 5; 
+localparam CONTROL_PCS = 5; 
 
 //Other Globals
 localparam ID_EX_Rd    = 0;			//Rd Index
@@ -101,7 +101,7 @@ wire [15:0] instr, //instruction
 			IF_ID_Imm;
 
 wire [11:0] signals_out; 	//Signal control wires	
-wire [2:0]  flags_out;			//control flags = 3'b N, V, Z
+wire [2:0]  flags_out;		//control flags = 3'b N, V, Z
 
 wire [3:0] IF_ID_Rd, 		//To hold initial decode values
 	   IF_ID_Rs,
@@ -117,12 +117,6 @@ wire branch; 				//Branch unit driven, tells when a branch is taken or not
 //TODO
 //wire [1:0] read_signals, forwardA, forwardB;
 //wire pc_write, if_id_write, stall, mem_ready, branch, jal, jr_forward;
-	
-//wire pc_write; //Used for pc halt
-
-//control signals set by control unit			
-//wire flags_update, sw_mux, b_l, hlt_sig, pcs, jump_register, branch, mem_read, mem_to_reg, mem_write, alu_src, reg_write;
-
 
 //** MODULES ** //
 
@@ -178,7 +172,8 @@ full_control control(
 ALU alu_op(	
 			.ALU_Out(alu_result),  //to D-mem and D-mem mux
 			.ALU_In1(op_1),  //rs 	
-			.ALU_In2(op_2),  //rt or sign extended imm
+			.ALU_In2(op_2),  //rt
+			.imm(IMM_ID_EX), //signed imm			
 			.Opcode(OPCODE_ID_EX), //opcode
 			.Flags_out(flags_out)); //to alu control unit and the and of the branch	
 
@@ -215,16 +210,16 @@ HDU hdu(
 //br_control(cond, flags, br_control, clk, branch);
 br_control br_controller(
 				.cond(IF_ID_Cond), 
-				.flags(IMM_ID_EX), 
-				.br_control(flags), 
+				.flags(flag_out), 
+				.br_control(signals_out[Branch]), 
 				.clk(clk), 
 				.branch(branch));						
 						
 //**Continuous Assignment**//						
 
 assign pc_incr = pc + 2;	// PC Increment
-assign pc_branch = signals_out[BranchRegister] ?  TODO : DATA_IF_ID[IF_ID_PC] + IF_ID_Imm; 
-assign br_branch = ???TODO;  
+assign pc_branch = signals_out[BranchRegister] ?  br_branch : DATA_IF_ID[IF_ID_PC] + IF_ID_Imm; 
+assign br_branch = read1;  //TODO
 
 //Assign the data to be written back (Memory or AluResult)
 assign write_data = CTRL_MEM_WB[CONTROL_MEM_TO_REG] ? DATA_MEM_WB[MEM_WB_RD] :	DATA_MEM_WB[MEM_WB_RESULT];	
@@ -239,19 +234,8 @@ assign op_2 = (forwardB == SRC_ID_EX)  ? DATA_ID_EX_OP2 :
 	      (forwardB == SRC_EX_MEM) ? DATA_EX_MEM[EX_MEM_RSLT] :
 	      (forwardB == SRC_MEM_WB) ? write_data : DATA_ID_EX_OP2;
 
-assign alu_src_data_rs = (pcs) ? pc : read_data1;
-assign alu_src_data = (alu_src) ? imm_off : read_data2;	//decision between reg val and imm
-assign flags_reg_input = (flags_update) ? flags_out : flags;
-		  
-		  
-//Other Assigns	  
-assign pc_write = (hlt_sig) ? 1'b0: 1'b1;   
-assign pc_branch = (jump_register) ? read_data1: pc_branch_temp;
-assign hlt = (pc_write) ? 1'b0 : 1'b1;
-	
-//Maybe used...?
-assign DATA_ID_EX_OP2 = CTRL_ID_EX[Jal] ? DATA_ID_EX[ID_EX_PC] : DATA_ID_EX[ID_EX_OP2];            // PASS THROUGH JAL ADDRESS IF JAL
-	
+assign alu_src_data_rs = pcs ? DATA_ID_EX[ID_EX_PC] : read_data1;
+		
 //**Program Counter**//
 always @(posedge clk or negedge rst_n) begin 
 	if (~rst_n) begin
