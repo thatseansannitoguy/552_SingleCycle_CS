@@ -119,28 +119,44 @@ wire [1:0] forward_src1, forward_src2;
 
 //** MODULES ** //
 
+//Cache memory
+cache_contoller D_cache_controller(.clk(clk), .rst(rst), .Address(MEM_ALU_result), .Data_In(D_new_block), 
+				.Data_Out(data_out), .Write_Data_Array(D_write_data), .Write_Tag_Array(D_write_tag),
+				.Miss(D_miss), .Read_Enable(MEM_MemRead | MEM_MemWrite), .Word_Num(word_num[2:0]));
+
+cache_contoller I_cache_controller(.clk(clk), .rst(rst), .Address(PC_in), .Data_In(I_new_block), 
+				.Data_Out(instruction), .Write_Data_Array(I_write_data), .Write_Tag_Array(I_write_tag), 
+				.Miss(I_miss), .Read_Enable(1'b1), .Word_Num(word_num[2:0]));
+
+
+
+
+
 //Instruction memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
-memory1c I_mem(				
-							.data_out(instr),
-							.data_in(16'h0000), 
-							.addr(pc), 
-							.enable(IF_ID_WriteInstr), 
-							.wr(1'b0), 
-							.clk(clk), 
-							.rst(~rst_n));
+//memory1c I_mem(				
+//							.data_out(instr),
+//							.data_in(16'h0000), 
+//							.addr(pc), 
+//							.enable(IF_ID_WriteInstr), 
+//							.wr(1'b0), 
+//							.clk(clk), 
+//							.rst(~rst_n));
 					
 //Data memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
-memory1c D_mem(	
-				.data_out(mem_read_data), //to post d-mem mux
-				.data_in(DATA_EX_MEM[EX_MEM_OP2]), //from reg read_data2
-				.addr(DATA_EX_MEM[EX_MEM_RESULT]), //from alu
-				.enable(CTRL_EX_MEM[CONTROL_MEM_WRITE] | CTRL_EX_MEM[CONTROL_MEM_READ]), //one of the control signals enabled 
-				.wr(CTRL_EX_MEM[CONTROL_MEM_WRITE]), //from control
-				.clk(clk), 
-				.rst(~rst_n));
+//memory1c D_mem(	
+//				.data_out(mem_read_data), //to post d-mem mux
+//				.data_in(DATA_EX_MEM[EX_MEM_OP2]), //from reg read_data2
+//				.addr(DATA_EX_MEM[EX_MEM_RESULT]), //from alu
+//				.enable(CTRL_EX_MEM[CONTROL_MEM_WRITE] | CTRL_EX_MEM[CONTROL_MEM_READ]), //one of the control signals enabled 
+//				.wr(CTRL_EX_MEM[CONTROL_MEM_WRITE]), //from control
+//				.clk(clk), 
+//				.rst(~rst_n));
 
+				
+				
+				
 //Register file 
 //RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
 RegisterFile reg_file(	
