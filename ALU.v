@@ -53,6 +53,8 @@ Shifter shift_ops(.Shift_Out(Shift_out), .Shift_In(ALU_In1), .Shift_Val(imm[3:0]
   
 PSA_16bit paddsub_ops(.Sum(PADDSB_out), .Error(dont_care2), .A(ALU_In1), .B(ALU_In2));
 
+red_add red_op(.rs(ALU_In1), .rt(ALU_In2), .rd(RED_out));
+
 assign LHB_out = (ALU_In1 & 16'h00FF) | (imm[7:0] << 8);
 assign LLB_out = (ALU_In1 & 16'hFF00) | {8'h00, {imm[7:0]}};
 
@@ -61,7 +63,7 @@ CLA_add_16 sw_lw_add(.Sum(LW_SW_out), .Ovfl(dont_care), .A(ALU_In1 & 16'hFFFE), 
 assign ALU_Out =
 	((Opcode == ADD) || (Opcode == PCS)) ? ADD_out : 
 	(Opcode == SUB) ? SUB_out : 
-	(Opcode == RED) ? RED_out : //TODO create RED module
+	(Opcode == RED) ? RED_out :
 	(Opcode == XOR) ? ALU_In1 ^ ALU_In2:
 	(Opcode == SLL) ? Shift_out :
 	(Opcode == SRA) ? Shift_out :
