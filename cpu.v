@@ -165,7 +165,7 @@ memory4c main_memory(.data_out(mem_data), .data_in(mem_data_in), .addr(mem_addr)
 					.wr(mem_write), .clk(clk), .rst(rst), .data_valid(mem_data_valid));
 	
 // cache interface for handling multi cache TODO 
-mem_cache_interface cache_interface(.fsm_busy(), 		.write_data_array(), 
+cache_interface cache_interface(.fsm_busy(), 		.write_data_array(), 
 									.write_tag_array(), .data_cache_write(), 
 									.D_miss(), 			.I_miss(), 
 									.D_addr(), 			.D_data(), 
