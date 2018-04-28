@@ -117,21 +117,78 @@ wire branch; 				//Branch unit driven, tells when a branch is taken or not
 //condition code set by Forwarding Unit for decision made on alu src values
 wire [1:0] forward_src1, forward_src2;
 
+// Main memory cache signals TODO
+wire fsm_busy;					// Reading from main mem
+wire fsm_write_data;			// Cache data write
+wire fsm_write_tag;				// Cache tag write
+wire miss_detected;				// Miss detection
+wire mem_valid;					// Read from memory valid
+wire mem_enable;				// Memory enable
+
+// Cache updating signals
+//I-cache signals
+wire I_miss;					// I cache miss	
+wire I_en;						// Write to I cache
+wire I_tag;						// Write to I tag
+wire I_stall;					// I cache stall
+
+//D-cache signals
+wire D_miss;					// D cache miss	
+wire D_en;						// Write to D
+wire D_tag;						// Write to D cache
+wire D_stall;					// D cache stall
+
+wire [2:0] word_num;			// Drive current word in block
+wire [15:0] mem_addr;			// Address for main memory
+wire [15:0] miss_address;		// Address for cache miss
+wire [15:0] mem_data;			// Main memory data
+wire [15:0] D_new_block;		// D cache write block
+wire [15:0] I_new_block;		// I cache write block
+wire [15:0] mem_data_in;		// Main memory write data
+
 //** MODULES ** //
 
 //Cache memory
-cache_contoller D_cache_controller(.clk(clk), .rst(rst), .Address(MEM_ALU_result), .Data_In(D_new_block), 
-				.Data_Out(data_out), .Write_Data_Array(D_write_data), .Write_Tag_Array(D_write_tag),
-				.Miss(D_miss), .Read_Enable(MEM_MemRead | MEM_MemWrite), .Word_Num(word_num[2:0]));
 
-cache_contoller I_cache_controller(.clk(clk), .rst(rst), .Address(PC_in), .Data_In(I_new_block), 
-				.Data_Out(instruction), .Write_Data_Array(I_write_data), .Write_Tag_Array(I_write_tag), 
+// D cache
+cache_contoller D_cache_controller(.clk(clk), .rst(rst), .Address(DATA_EX_MEM[EX_MEM_RESULT]), .Data_In(D_new_block), 
+				.Data_Out(mem_read_data), .Write_Data_Array(D_en), .Write_Tag_Array(D_tag),
+				.Miss(D_miss), .Read_Enable(CTRL_EX_MEM[CONTROL_MEM_WRITE] | CTRL_EX_MEM[CONTROL_MEM_READ]), .Word_Num(word_num[2:0]));
+
+// I cache
+cache_contoller I_cache_controller(.clk(clk), .rst(rst), .Address(pc), .Data_In(I_new_block), 
+				.Data_Out(instr), .Write_Data_Array(I_en), .Write_Tag_Array(I_tag), 
 				.Miss(I_miss), .Read_Enable(1'b1), .Word_Num(word_num[2:0]));
 
+// Main memory (used by both i cache and d cache)
+memory4c main_memory(.data_out(mem_data), .data_in(mem_data_in), .addr(mem_addr), .enable(mem_enable), 
+					.wr(mem_write), .clk(clk), .rst(rst), .data_valid(mem_data_valid));
+	
+// cache interface for handling multi cache TODO 
+mem_cache_interface cache_interface(.fsm_busy(), 		.write_data_array(), 
+									.write_tag_array(), .data_cache_write(), 
+									.D_miss(), 			.I_miss(), 
+									.D_addr(), 			.D_data(), 
+									.memory_data(), 	.I_addr(), 
+									.miss_detected(),	.mem_en(), 
+									.mem_write(), 		.D_tag(),
+									.miss_address(), 	.mem_data_in(), 
+									.D_new_block(),		.I_new_block(), 
+									.clk(clk), 			.rst(rst), .D_en(),
+									.I_en(), 			.I_stall(), 
+									.D_stall(), 		.I_tag(), 
+									.Word_Num());
+
+// cache block fill on miss state machine TODO
+cache_fill_FSM miss_protocal(	.clk(clk), 			.rst_n(), 
+								.miss_detected(), 	.miss_address(), 
+								.fsm_busy(), 		.write_data_array(), 
+								.write_tag_array(),	.memory_address(), 
+								.memory_data(), .	.memory_data_valid());
 
 
-
-
+// NON CACHE IMPL //					
+					
 //Instruction memory
 //memory1c (data_out, data_in, addr, enable, wr, clk, rst);
 //memory1c I_mem(				

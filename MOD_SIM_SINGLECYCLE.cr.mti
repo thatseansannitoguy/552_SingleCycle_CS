@@ -68,7 +68,15 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	addsub_4bit
 
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v {0 vlog\ -work\ work\ -stats=none\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v\nModel\ Technology\ ModelSim\ ALTERA\ vlog\ 10.4d\ Compiler\ 2015.12\ Dec\ 30\ 2015\n--\ Compiling\ module\ cache_fill_FSM\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(64):\ near\ \"4\":\ syntax\ error,\ unexpected\ INTEGER\ NUMBER.\n\n**\ Error:\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(139):\ (vlog-2730)\ Undefined\ variable:\ 'address_new'.\n\n**\ Error:\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(157):\ (vlog-2730)\ Undefined\ variable:\ 'address_current'.\n\n**\ Error:\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(159):\ (vlog-2730)\ Undefined\ variable:\ 'WAIT1'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(164):\ near\ \"\{\":\ syntax\ error,\ unexpected\ '\{',\ expecting\ '\;'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(172):\ near\ \"\{\":\ syntax\ error,\ unexpected\ '\{',\ expecting\ '\;'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(180):\ near\ \"\{\":\ syntax\ error,\ unexpected\ '\{',\ expecting\ '\;'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(188):\ near\ \"\{\":\ syntax\ error,\ unexpected\ '\{',\ expecting\ '\;'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(196):\ near\ \"\{\":\ syntax\ error,\ unexpected\ '\{',\ expecting\ '\;'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(204):\ near\ \"\{\":\ syntax\ error,\ unexpected\ '\{',\ expecting\ '\;'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(212):\ near\ \"\{\":\ syntax\ error,\ unexpected\ '\{',\ expecting\ '\;'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(220):\ near\ \"\{\":\ syntax\ error,\ unexpected\ '\{',\ expecting\ '\;'.\n\n**\ Error:\ (vlog-13069)\ C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v(232):\ near\ \"4\":\ syntax\ error,\ unexpected\ INTEGER\ NUMBER.\n\n\n {4.0 5.0 6.0 7.0 8.0 9.0 10.0 11.0 12.0 13.0 14.0 15.0 16.0 17.0 18.0 19.0 20.0 21.0 22.0 23.0 24.0 25.0 26.0 27.0 28.0 29.0} {}} C:/shared/552_SingleCycle/552_SingleCycle/decoder_3_8.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/decoder_3_8.v
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v {1 {vlog -work work -stats=none {C:\shared\552_SingleCycle\552_SingleCycle\cache_fill_FSM.v}
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module cache_fill_FSM
+-- Compiling module four_bit_state
+
+Top level modules:
+	cache_fill_FSM
+
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/decoder_3_8.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/decoder_3_8.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module decoder_3_8
 
@@ -83,13 +91,6 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 
 Top level modules:
 	MetaDataArray
-
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cpu.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/cpu.v
-Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
--- Compiling module cpu
-
-Top level modules:
-	cpu
 
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/memory.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/memory.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
@@ -125,6 +126,13 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 
 Top level modules:
 	full_control
+
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cache_controller_tb.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/cache_controller_tb.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module cache_tb
+
+Top level modules:
+	cache_tb
 
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/adder_4bit_red.v {1 {vlog -work work -stats=none {C:\shared\552_SingleCycle\552_SingleCycle\adder_4bit_red.v}
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
