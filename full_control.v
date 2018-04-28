@@ -105,8 +105,21 @@ always@(*) begin
 							imm_dec = NO_SET_IMM;
 					end
 				RED: begin
-						//TODO
-						signals_out = NO_SET_SIGNALS;
+							signals_out[0] = ON;  //RegWrite		
+							signals_out[1] = OFF; //ALUsrc
+							signals_out[2] = OFF; //MemWrite
+							signals_out[3] = OFF; //MemToReg
+							signals_out[4] = OFF; //MemRead
+							signals_out[5] = OFF; //Branch 
+							signals_out[6] = OFF; //BranchRegister
+							signals_out[7] = OFF; //PCS cond
+							signals_out[8] = OFF; //Halt
+							
+							rd = instr[11:8];
+							rs = instr[7:4];
+							rt = instr[3:0];
+							
+							imm_dec = NO_SET_IMM;
 				
 					end
 				XOR: begin 
