@@ -165,19 +165,7 @@ memory4c main_memory(.data_out(mem_data), .data_in(mem_data_in), .addr(mem_addr)
 					.wr(mem_write), .clk(clk), .rst(rst), .data_valid(mem_data_valid));
 	
 // cache interface for handling multi cache TODO 
-cache_interface cache_interface(.fsm_busy(), 		.write_data_array(), 
-									.write_tag_array(), .data_cache_write(), 
-									.D_miss(), 			.I_miss(), 
-									.D_addr(), 			.D_data(), 
-									.memory_data(), 	.I_addr(), 
-									.miss_detected(),	.mem_en(), 
-									.mem_write(), 		.D_tag(),
-									.miss_address(), 	.mem_data_in(), 
-									.D_new_block(),		.I_new_block(), 
-									.clk(clk), 			.rst(rst), .D_en(),
-									.I_en(), 			.I_stall(), 
-									.D_stall(), 		.I_tag(), 
-									.Word_Num());
+cache_interface cache_interface();
 
 // cache block fill on miss state machine TODO
 cache_fill_FSM miss_protocal(	.clk(clk), 			.rst_n(), 
