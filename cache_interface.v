@@ -2,13 +2,12 @@
 module cache_interface(fsm_busy, write_data_array, write_tag_array, data_cache_write, D_miss, I_miss,
 							D_addr, D_data, memory_data, I_addr, miss_detected, mem_en, mem_write, D_tag,
 							D_enable, I_tag, I_enable, miss_address, mem_data_in, D_new_block,
-							I_new_block, clk, rst, I_stall, D_stall, Word_Num);
+							I_new_block, clk, rst, I_stall, D_stall);
 	// INPUTS
 	input clk, rst;				// system clock and reset
 	input fsm_busy;				// busy signal from cache state machine
 	input write_data_array;		// fsm_write_data
 	input write_tag_array;		// fsm_write_tag
-	input [2:0] Word_Num;		// Word Selection
 	input data_cache_write;		// MEM_MemWrite
 	
 	//D-mem
