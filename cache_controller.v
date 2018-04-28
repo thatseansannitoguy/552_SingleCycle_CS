@@ -27,15 +27,15 @@ module cache_controller(clk, rst, Address, Data_In, Data_Out, Write_Data_Array, 
 	wire [7:0] tag_check, tag; 
 
 	// Modules //
-	decoder_3_8 (.input_3(word_index), output_8(word_read));
-	decoder_7_128 block_decoder (input_7(block_index), output_128(block_enable));
-	Shifter multi_byte_shifter (.Shift_Out(), .Shift_In(16'h0001), .Shift_Val({1'b0, Word_Num}), .Mode_In(2'b00));	//Mode = SLL, for multi byte writes
+	decoder_3_8 word_decoder(.input_3(word_index), .output_8(word_read));
+	decoder_7_128 block_decoder(.input_7(block_index), .output_128(block_enable));
+	Shifter multi_byte_shifter(.Shift_Out(word_write), .Shift_In(16'h0001), .Shift_Val({1'b0, Word_Num}), .Mode_In(2'b00));	//Mode = SLL, for multi byte writes
 
 	//Meta data array (Valid + tag bits)
-	MetaDataArray MDA (.clk(clk), .rst(rst), .DataIn(tag), .Write(Write_Tag_Array), .BlockEnable(block_enable), .DataOut(tag_check));
+	MetaDataArray MetaDataArrayCache (.clk(clk), .rst(rst), .DataIn(tag), .Write(Write_Tag_Array), .BlockEnable(block_enable), .DataOut(tag_check));
 
 	//Data array (cache lines)
-	DataArray DA (.clk(clk), .rst(rst), .DataIn(Data_In), .Write(Write_Data_Array), .BlockEnable(block_enable), .WordEnable(word_enable), .DataOut(cache_data));	
+	DataArray DataArrayCache (.clk(clk), .rst(rst), .DataIn(Data_In), .Write(Write_Data_Array), .BlockEnable(block_enable), .WordEnable(word_enable), .DataOut(cache_data));	
 
 	// Assignments //
 	assign block_index = {Address[8:4],1'b0};	//Byte addressable Block # = (block address) % 128/8, 8 bits of address as block #

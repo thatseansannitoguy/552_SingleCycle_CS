@@ -12,7 +12,7 @@ always @ (*)
 		3'b100 : assign output_8 = 8'h10;
 		3'b101 : assign output_8 = 8'h20;
 		3'b110 : assign output_8 = 8'h40;
-		3'b111 : assign output_8 = 8'h80
+		3'b111 : assign output_8 = 8'h80;
 	endcase
 
 endmodule

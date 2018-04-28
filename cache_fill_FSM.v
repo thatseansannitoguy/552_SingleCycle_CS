@@ -9,10 +9,10 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 	input memory_data_valid; // active high indicates valid data returning on memory bus
 	
 	//Outputs
-	output fsm_busy; // asserted while FSM is busy handling the miss (can be used as pipeline stall signal)
-	output write_data_array; // write enable to cache data array to signal when filling with memory_data
-	output write_tag_array; // write enable to cache tag array to write tag and valid bit once all words are filled in to data array
-	output [15:0] memory_address; // address to read from memory
+	output reg fsm_busy; // asserted while FSM is busy handling the miss (can be used as pipeline stall signal)
+	output reg write_data_array; // write enable to cache data array to signal when filling with memory_data
+	output reg write_tag_array; // write enable to cache tag array to write tag and valid bit once all words are filled in to data array
+	output reg [15:0] memory_address; // address to read from memory
 	
 	//Params
 	localparam ACTIVE = 1'b1;
@@ -30,26 +30,26 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 	localparam WAIT_8  	= 4'b1000;
 	
 	//Internal Wires
-	wire [3:0] current_state, next_state; 
+	reg [3:0] current_state, next_state; 
 	
-	wire [15:0] current_data1, next_data1;
-	wire [15:0] current_data2, next_data2;
-	wire [15:0] current_data3, next_data3;
-	wire [15:0] current_data4, next_data4;
-	wire [15:0] current_data5, next_data5;
-	wire [15:0] current_data6, next_data6;
-	wire [15:0] current_data7, next_data7;
-	wire [15:0] current_data8, next_data8;
-	wire [15:0] current_address, next_address;
+	reg [15:0] current_data1, next_data1;
+	reg [15:0] current_data2, next_data2;
+	reg [15:0] current_data3, next_data3;
+	reg [15:0] current_data4, next_data4;
+	reg [15:0] current_data5, next_data5;
+	reg [15:0] current_data6, next_data6;
+	reg	[15:0] current_data7, next_data7;
+	reg [15:0] current_data8, next_data8;
+	reg [15:0] current_address, next_address;
 	
-	wire en1;
-	wire en2;
-	wire en3;
-	wire en4;
-	wire en5;
-	wire en6;
-	wire en7;
-	wire en8;
+	reg en1;
+	reg en2;
+	reg en3;
+	reg	en4;
+	reg en5;
+	reg en6;
+	reg en7;
+	reg en8;
 
 	wire temp_ovfl;
 	
@@ -61,7 +61,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.B(16'h0002)
 	);
 	
-	4_bit_state state_machine_reg(
+	four_bit_state state_machine_reg(
 		.next_data(next_state), 
 		.clk(clk), 
 		.rst(~rst_n), 
@@ -69,7 +69,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.current_data(current_state)
 	);
 
-	4_bit_state data_1_reg(
+	four_bit_state data_1_reg(
 		.next_data(next_data1),
 		.clk(clk),
 		.rst(~rst_n),
@@ -77,7 +77,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.current_data(current_data1)
 	);
 	
-	4_bit_state data_2_reg(
+	four_bit_state data_2_reg(
 		.next_data(next_data2),
 		.clk(clk),
 		.rst(~rst_n),
@@ -85,7 +85,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.current_data(current_data2)
 	);
 	
-	4_bit_state data_3_reg(
+	four_bit_state data_3_reg(
 		.next_data(next_data3),
 		.clk(clk),
 		.rst(~rst_n),
@@ -93,7 +93,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.current_data(current_data3)
 	);
 	
-	4_bit_state data_4_reg(
+	four_bit_state data_4_reg(
 		.next_data(next_data4),
 		.clk(clk),
 		.rst(~rst_n),
@@ -101,7 +101,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.current_data(current_data4)
 	);
 	
-	4_bit_state data_5_reg(
+	four_bit_state data_5_reg(
 		.next_data(next_data5),
 		.clk(clk),
 		.rst(~rst_n),
@@ -109,7 +109,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.current_data(current_data5)
 	);
 	
-	4_bit_state data_6_reg(
+	four_bit_state data_6_reg(
 		.next_data(next_data6),
 		.clk(clk),
 		.rst(~rst_n),
@@ -117,7 +117,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.current_data(current_data6)
 	);
 	
-	4_bit_state data_7_reg(
+	four_bit_state data_7_reg(
 		.next_data(next_data7),
 		.clk(clk),
 		.rst(~rst_n),
@@ -125,7 +125,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		.current_data(current_data7)
 	);
 	
-	4_bit_state data_8_reg(
+	four_bit_state data_8_reg(
 		.next_data(next_data8),
 		.clk(clk),
 		.rst(~rst_n),
@@ -136,7 +136,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 	//FSM combinational logic
 	always @(*) begin
 
-		address_new = 16'h0000;
+		next_address = 16'h0000;
 		fsm_busy = NONACTIVE;
 		write_data_array = NONACTIVE;
 		next_state = IDLE_0;
@@ -154,70 +154,70 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 			IDLE_0: begin
 				fsm_busy = miss_detected ? ACTIVE: NONACTIVE;
 				memory_address[15:0] = (miss_detected) ? miss_address[15:0]: 16'h0000;
-				address_current = miss_detected ? miss_address[15:0]: 16'h0000;
+				current_address = miss_detected ? miss_address[15:0]: 16'h0000;
 				write_data_array = miss_detected ? ACTIVE: NONACTIVE;
-				next_state = miss_detected ? WAIT1: IDLE_0;
+				next_state = miss_detected ? WAIT_1: IDLE_0;
 			end
 
 			WAIT_1: begin
 				en1 = ACTIVE;
-				next_data1[15:0] = 16{memory_data_valid} | memory_data[15:0];
+				next_data1[15:0] = {16{memory_data_valid}} | memory_data[15:0];
 				memory_address = next_address;
 				current_address = next_address;
 				next_state = WAIT_2;
 			end
 			
 			WAIT_2: begin
-				en1 = ACTIVE;
-				next_data1[15:0] = 16{memory_data_valid} | memory_data[15:0];
+				en2 = ACTIVE;
+				next_data1[15:0] = {16{memory_data_valid}} | memory_data[15:0];
 				memory_address = next_address;
 				current_address = next_address;
-				next_state = WAIT_2;
+				next_state = WAIT_3;
 			end
 			
 			WAIT_3: begin
-				en1 = ACTIVE;
-				next_data1[15:0] = 16{memory_data_valid} | memory_data[15:0];
+				en3 = ACTIVE;
+				next_data1[15:0] = {16{memory_data_valid}} | memory_data[15:0];
 				memory_address = next_address;
 				current_address = next_address;
-				next_state = WAIT_2;
+				next_state = WAIT_4;
 			end
 			
 			WAIT_4: begin
-				en1 = ACTIVE;
-				next_data1[15:0] = 16{memory_data_valid} | memory_data[15:0];
+				en4 = ACTIVE;
+				next_data1[15:0] = {16{memory_data_valid}} | memory_data[15:0];
 				memory_address = next_address;
 				current_address = next_address;
-				next_state = WAIT_2;
+				next_state = WAIT_5;
 			end
 			
 			WAIT_5: begin
-				en1 = ACTIVE;
-				next_data1[15:0] = 16{memory_data_valid} | memory_data[15:0];
+				en5 = ACTIVE;
+				next_data1[15:0] = {16{memory_data_valid}} | memory_data[15:0];
 				memory_address = next_address;
 				current_address = next_address;
-				next_state = WAIT_2;
+				next_state = WAIT_6;
 			end
 			
 			WAIT_6: begin
-				en1 = ACTIVE;
-				next_data1[15:0] = 16{memory_data_valid} | memory_data[15:0];
+				en6 = ACTIVE;
+				next_data1[15:0] = {16{memory_data_valid}} | memory_data[15:0];
 				memory_address = next_address;
 				current_address = next_address;
-				next_state = WAIT_2;
+				next_state = WAIT_7;
 			end
 			
 			WAIT_7: begin
-				en1 = ACTIVE;
-				next_data1[15:0] = 16{memory_data_valid} | memory_data[15:0];
+				en7 = ACTIVE;
+				next_data1[15:0] = {16{memory_data_valid}} | memory_data[15:0];
 				memory_address = next_address;
 				current_address = next_address;
-				next_state = WAIT_2;
+				next_state = WAIT_8;
 			end
 			
 			WAIT_8: begin
 				en8 = ACTIVE;
-				next_data8[15:0] = 16{memory_data_valid} | memory_data[15:0];
+				next_data8[15:0] = {16{memory_data_valid}} | memory_data[15:0];
 				memory_address = 16'h0000;
 				current_address = 16'h0000;
 				next_state = IDLE_0;
@@ -229,27 +229,28 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 	
 endmodule
 
-module 4_bit_state (next_data, clk, rst, en, current_data)
+
+module four_bit_state (next_data, clk, rst, en, current_data);
 	input [15:0] next_data;
 	input clk, rst, en; 
 	
 	output [15:0] current_data; 
 	
-	dff dff0(.q(current_data[0]), .d(next_data[0]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[1]), .d(next_data[1]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[2]), .d(next_data[2]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[3]), .d(next_data[3]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[4]), .d(next_data[4]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[5]), .d(next_data[5]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[6]), .d(next_data[6]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[7]), .d(next_data[7]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[8]), .d(next_data[8]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[9]), .d(next_data[9]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[10]), .d(next_data[10]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[11]), .d(next_data[11]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[12]), .d(next_data[12]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[13]), .d(next_data[13]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[14]), .d(next_data[14]), .wen(en), .clk(clk), .rst(rst);
-	dff dff0(.q(current_data[15]), .d(next_data[15]), .wen(en), .clk(clk), .rst(rst);	
+	dff dff0(.q(current_data[0]), .d(next_data[0]), .wen(en), .clk(clk), .rst(rst));
+	dff dff1(.q(current_data[1]), .d(next_data[1]), .wen(en), .clk(clk), .rst(rst));
+	dff dff2(.q(current_data[2]), .d(next_data[2]), .wen(en), .clk(clk), .rst(rst));
+	dff dff3(.q(current_data[3]), .d(next_data[3]), .wen(en), .clk(clk), .rst(rst));
+	dff dff4(.q(current_data[4]), .d(next_data[4]), .wen(en), .clk(clk), .rst(rst));
+	dff dff5(.q(current_data[5]), .d(next_data[5]), .wen(en), .clk(clk), .rst(rst));
+	dff dff6(.q(current_data[6]), .d(next_data[6]), .wen(en), .clk(clk), .rst(rst));
+	dff dff7(.q(current_data[7]), .d(next_data[7]), .wen(en), .clk(clk), .rst(rst));
+	dff dff8(.q(current_data[8]), .d(next_data[8]), .wen(en), .clk(clk), .rst(rst));
+	dff dff9(.q(current_data[9]), .d(next_data[9]), .wen(en), .clk(clk), .rst(rst));
+	dff dff10(.q(current_data[10]), .d(next_data[10]), .wen(en), .clk(clk), .rst(rst));
+	dff dff11(.q(current_data[11]), .d(next_data[11]), .wen(en), .clk(clk), .rst(rst));
+	dff dff12(.q(current_data[12]), .d(next_data[12]), .wen(en), .clk(clk), .rst(rst));
+	dff dff13(.q(current_data[13]), .d(next_data[13]), .wen(en), .clk(clk), .rst(rst));
+	dff dff14(.q(current_data[14]), .d(next_data[14]), .wen(en), .clk(clk), .rst(rst));
+	dff dff15(.q(current_data[15]), .d(next_data[15]), .wen(en), .clk(clk), .rst(rst));	
 	
 endmodule

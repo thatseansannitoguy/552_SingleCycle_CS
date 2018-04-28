@@ -39,8 +39,10 @@ full_adder_1bit C_0_1_2(.A(carry_out[0]), .B(carry_out[1]), .Cin(carry_out[2]), 
 full_adder_1bit C_3_4_5(.A(carry_out[3]), .B(carry_out[4]), .Cin(carry_out[5]), .S(WT_S1), .Cout(WT_C1));
 
 //WT layer2
-full_adder_1bit C_0_1_2(.A(WT_S0), .B(WT_S1), .Cin(carry_out[6]), .S(R_bit_6_4[0]), .Cout(WT_C3));
-full_adder_1bit C_0_1_2(.A(WT_C0), .B(WT_C1), .Cin(WT_C3), .S(R_bit_6_4[1]), .Cout(R_bit_6_4[2]));
+full_adder_1bit C_l2(.A(WT_S0), .B(WT_S1), .Cin(carry_out[6]), .S(R_bit_6_4[0]), .Cout(WT_C3));
+full_adder_1bit C_l2_carry(.A(WT_C0), .B(WT_C1), .Cin(WT_C3), .S(R_bit_6_4[1]), .Cout(R_bit_6_4[2]));
 
 //sign extended rd 
 assign rd = {{9{R_bit_6_4[2]}}, R_bit_6_4, L3_0};
+
+endmodule
