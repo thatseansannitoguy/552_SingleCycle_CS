@@ -57,8 +57,7 @@ module cache_interface(fsm_busy, write_data_array, write_tag_array, data_cache_w
 					
 	assign D_new_block = (write_data_array) ? D_data : 
 							(data_cache_write) ? memory_data : 
-							D_data;	//if writing, then what block value???
-							
+							D_data;	//if writing, then what block value???					
 	assign D_stall = D_miss; // If a miss, then stall
 	
 	//I-mem based assignments

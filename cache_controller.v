@@ -20,11 +20,11 @@ module cache_controller(clk, rst, Address, Data_In, Data_Out, Write_Data_Array, 
 	wire [7:0] word_enable; 
 	
 	wire [15:0] word_write;
-	wire[7:0] word_read; 
+	wire[5:0] word_read; 
 
 	wire [15:0] cache_data;
 
-	wire [7:0] tag_check, tag; 
+	wire [5:0] tag_check, tag; 
 
 	// Modules //
 	decoder_3_8 word_decoder(.input_3(word_index), .output_8(word_read));
@@ -38,9 +38,9 @@ module cache_controller(clk, rst, Address, Data_In, Data_Out, Write_Data_Array, 
 	DataArray DataArrayCache (.clk(clk), .rst(rst), .DataIn(Data_In), .Write(Write_Data_Array), .BlockEnable(block_enable), .WordEnable(word_enable), .DataOut(cache_data));	
 
 	// Assignments //
-	assign block_index = {Address[8:4],1'b0};	//Byte addressable Block # = (block address) % 128/8, 8 bits of address as block #
-	assign word_index = Address[3:1];			//Word select bits are 3 least significant bits of the index
-	assign tag = {1'b1, Address[14:8]};			//tag with first bit valid now, tag = address[15:8]
+	assign block_index = Address[9:3];			//Byte addressable Block # = (block address) % 128
+	assign word_index = Address[2:0];			//Word select bits are 3 least significant bits of the index
+	assign tag = {1'b1,Address[14:10]};				//tag with first bit valid now, tag = address[14:10]
 
 	assign word_enable = Write_Data_Array ? word_write[7:0] : word_read;	//differentiate on word write and reads
 	

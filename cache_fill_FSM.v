@@ -1,5 +1,5 @@
 //Nate Ciske - cache_fill_FSM.v - Also HW#9 - ECE552 UW-Madison
-module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_data_array, write_tag_array,memory_address, memory_data, memory_data_valid);
+module cache_fill_FSM(clk, rst_n, word_num miss_detected, miss_address, fsm_busy, write_data_array, write_tag_array,memory_address, memory_data, memory_data_valid, word_num);
 	
 	//Inputs
 	input clk, rst_n;
@@ -13,6 +13,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 	output reg write_data_array; // write enable to cache data array to signal when filling with memory_data
 	output reg write_tag_array; // write enable to cache tag array to write tag and valid bit once all words are filled in to data array
 	output reg [15:0] memory_address; // address to read from memory
+	output reg [2:0] word_num; //word written to in cache
 	
 	//Params
 	localparam ACTIVE = 1'b1;
@@ -140,6 +141,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 		fsm_busy = NONACTIVE;
 		write_data_array = NONACTIVE;
 		next_state = IDLE_0;
+		word_num = NONACTIVE; 
 		
 		en1 = NONACTIVE;
 		en2 = NONACTIVE;
@@ -165,6 +167,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 				memory_address = next_address;
 				current_address = next_address;
 				next_state = WAIT_2;
+				word_num = 3'h0; 
 			end
 			
 			WAIT_2: begin
@@ -173,6 +176,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 				memory_address = next_address;
 				current_address = next_address;
 				next_state = WAIT_3;
+				word_num = 3'h1; 
 			end
 			
 			WAIT_3: begin
@@ -181,6 +185,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 				memory_address = next_address;
 				current_address = next_address;
 				next_state = WAIT_4;
+				word_num = 3'h2; 
 			end
 			
 			WAIT_4: begin
@@ -189,6 +194,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 				memory_address = next_address;
 				current_address = next_address;
 				next_state = WAIT_5;
+				word_num = 3'h3; 
 			end
 			
 			WAIT_5: begin
@@ -197,6 +203,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 				memory_address = next_address;
 				current_address = next_address;
 				next_state = WAIT_6;
+				word_num = 3'h4; 
 			end
 			
 			WAIT_6: begin
@@ -205,6 +212,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 				memory_address = next_address;
 				current_address = next_address;
 				next_state = WAIT_7;
+				word_num = 3'h5; 
 			end
 			
 			WAIT_7: begin
@@ -213,6 +221,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 				memory_address = next_address;
 				current_address = next_address;
 				next_state = WAIT_8;
+				word_num = 3'h6; 
 			end
 			
 			WAIT_8: begin
@@ -221,6 +230,7 @@ module cache_fill_FSM(clk, rst_n, miss_detected, miss_address, fsm_busy, write_d
 				memory_address = 16'h0000;
 				current_address = 16'h0000;
 				next_state = IDLE_0;
+				word_num = 3'h7; 
 			end
 
 		endcase
