@@ -153,12 +153,12 @@ wire [15:0] mem_data_in;		// Main memory write data
 //Cache memory
 
 // D cache
-cache_contoller D_cache_controller(.clk(clk), .rst(rst), .Address(DATA_EX_MEM[EX_MEM_RESULT]), .Data_In(D_new_block), 
+cache_controller D_cache_controller(.clk(clk), .rst(rst), .Address(DATA_EX_MEM[EX_MEM_RESULT]), .Data_In(D_new_block), 
 				.Data_Out(mem_read_data), .Write_Data_Array(D_en), .Write_Tag_Array(D_tag),
 				.Miss(D_miss), .Read_Enable(CTRL_EX_MEM[CONTROL_MEM_WRITE] | CTRL_EX_MEM[CONTROL_MEM_READ]), .Word_Num(word_num));
 
 // I cache
-cache_contoller I_cache_controller(.clk(clk), .rst(rst), .Address(pc), .Data_In(I_new_block), 
+cache_controller I_cache_controller(.clk(clk), .rst(rst), .Address(pc), .Data_In(I_new_block), 
 				.Data_Out(instr), .Write_Data_Array(I_en), .Write_Tag_Array(I_tag), 
 				.Miss(I_miss), .Read_Enable(1'b1), .Word_Num(word_num));
 
@@ -167,17 +167,17 @@ memory4c main_memory(.data_out(mem_data), .data_in(mem_data_in), .addr(mem_addre
 					.wr(mem_write), .clk(clk), .rst(rst), .data_valid(mem_data_valid));
 	
 // cache interface for handling multi cache 
-cache_interface cache_interface(.fsm_busy(fsm_busy), .write_data_array(fsm_write_data), .write_tag_array(fsm_write_tag), .data_cache_write(CTRL_EX_MEM[CONTROL_MEM_WRITE]), .D_miss(D_miss), .I_miss(I_miss),
-							.D_addr(DATA_EX_MEM[EX_MEM_RESULT]), .D_data(DATA_EX_MEM[EX_MEM_OP2], .memory_data(mem_data), .I_addr(pc), .miss_detected(miss_detected), .mem_en(mem_enable), .mem_write(mem_write), .D_tag(D_tag),
-							D_enable(D_en), .I_tag(I_tag), .I_enable(I_en), .miss_address(miss_address), .mem_data_in(mem_data_in), .D_new_block(D_new_block),
+cache_interface cache_InterFace(.fsm_busy(fsm_busy), .write_data_array(fsm_write_data), .write_tag_array(fsm_write_tag), .data_cache_write(CTRL_EX_MEM[CONTROL_MEM_WRITE]), .D_miss(D_miss), .I_miss(I_miss),
+							.D_addr(DATA_EX_MEM[EX_MEM_RESULT]), .D_data(DATA_EX_MEM[EX_MEM_OP2]), .memory_data(mem_data), .I_addr(pc), .miss_detected(miss_detected), .mem_en(mem_enable), .mem_write(mem_write), .D_tag(D_tag),
+							.D_enable(D_en), .I_tag(I_tag), .I_enable(I_en), .miss_address(miss_address), .mem_data_in(mem_data_in), .D_new_block(D_new_block),
 							.I_new_block(I_new_block), .clk(clk), .rst(rst), .I_stall(I_stall), .D_stall(D_stall));
 
 // cache block fill on miss state machine 
-cache_fill_FSM miss_protocal(	.clk(clk), 			.rst_n(rst), .word_num(word_num), 
-								.miss_detected(miss_detected), 	.miss_address(miss_address), 
-								.fsm_busy(fsm_busy), 		.write_data_array(fsm_write_data), 
-								.write_tag_array(fsm_write_tag),	.memory_address(mem_address), 
-								.memory_data(mem_data_valid), .	.memory_data_valid(mem_data_valid));
+cache_fill_FSM miss_protocal(	.clk(clk), .rst_n(rst), .word_num(word_num), 
+								.miss_detected(miss_detected), .miss_address(miss_address), 
+								.fsm_busy(fsm_busy), .write_data_array(fsm_write_data), 
+								.write_tag_array(fsm_write_tag), .memory_address(mem_address), 
+								.memory_data(mem_data_valid), .memory_data_valid(mem_data_valid));
 
 
 // NON CACHE IMPL //					

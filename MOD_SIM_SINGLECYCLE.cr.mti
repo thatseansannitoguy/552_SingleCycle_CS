@@ -12,19 +12,19 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	FwardUnit
 
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/multicycle_memory.v {1 {vlog -work work -stats=none {C:\shared\552_SingleCycle\552_SingleCycle\multicycle_memory.v}
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module memory4c
+
+Top level modules:
+	memory4c
+
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/red_add.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/red_add.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module red_add
 
 Top level modules:
 	red_add
-
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/multicycle_memory.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/multicycle_memory.v
-Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
--- Compiling module memory4c
-
-Top level modules:
-	memory4c
 
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/FlagsReg.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/FlagsReg.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
@@ -47,6 +47,13 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	ReadDecoder_4_16
 
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cache_interface.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/cache_interface.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module cache_interface
+
+Top level modules:
+	cache_interface
+
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase2.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase2.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module cpu_ptb
@@ -61,6 +68,13 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	Mux_3_1
 
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase3.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/S18_cpu_testbench_phase3.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module cpu_ctb
+
+Top level modules:
+	cpu_ctb
+
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/addsub_4bit.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/addsub_4bit.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module addsub_4bit
@@ -68,20 +82,19 @@ Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 Top level modules:
 	addsub_4bit
 
-} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cache_fill_FSM.v {1 {vlog -work work -stats=none {C:\shared\552_SingleCycle\552_SingleCycle\cache_fill_FSM.v}
-Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
--- Compiling module cache_fill_FSM
--- Compiling module four_bit_state
-
-Top level modules:
-	cache_fill_FSM
-
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/decoder_3_8.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/decoder_3_8.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
 -- Compiling module decoder_3_8
 
 Top level modules:
 	decoder_3_8
+
+} {} {}} C:/shared/552_SingleCycle/552_SingleCycle/cpu.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/cpu.v
+Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
+-- Compiling module cpu
+
+Top level modules:
+	cpu
 
 } {} {}} C:/shared/552_SingleCycle/552_SingleCycle/MetaDataArray.v {1 {vlog -work work -stats=none C:/shared/552_SingleCycle/552_SingleCycle/MetaDataArray.v
 Model Technology ModelSim ALTERA vlog 10.4d Compiler 2015.12 Dec 30 2015
